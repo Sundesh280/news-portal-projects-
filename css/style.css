@@ -1,0 +1,652 @@
+/*style.css — Nepal Khabar — Clean News Portal (matches screenshot design)*/
+
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Source+Serif+4:wght@300;400;600&family=DM+Sans:wght@400;500;600;700&display=swap');
+
+/* ── CSS Variables ─────────────────────────────────────────── */
+:root {
+  --red:       #C0392B;
+  --red-dark:  #96281B;
+  --red-light: #FDECEA;
+  --black:     #0D0D0D;
+  --charcoal:  #1E1E1E;
+  --gray:      #4A4A4A;
+  --midgray:   #8C8C8C;
+  --lightgray: #E0E0E0;
+  --bg:        #F4F4F4;
+  --bg-warm:   #FAF7F3;
+  --white:     #FFFFFF;
+  --accent-blue: #1A5276;
+  --accent-teal: #117A65;
+  --font-head: 'Playfair Display', Georgia, serif;
+  --font-body: 'Source Serif 4', Georgia, serif;
+  --font-ui:   'DM Sans', sans-serif;
+  --radius:    3px;
+  --radius-md: 4px;
+  --shadow:    0 1px 6px rgba(0,0,0,0.07);
+  --shadow-lg: 0 4px 18px rgba(0,0,0,0.11);
+  --shadow-xl: 0 8px 32px rgba(0,0,0,0.14);
+}
+
+/* ── Reset ──────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html  { font-size: 16px; scroll-behavior: smooth; }
+body  { background: var(--bg); color: var(--black); font-family: var(--font-body); line-height: 1.7; }
+img   { max-width: 100%; height: auto; display: block; }
+a     { color: inherit; text-decoration: none; }
+button{ cursor: pointer; border: none; background: none; font-family: var(--font-ui); }
+
+/* ── Utility ────────────────────────────────────────────────── */
+.container { max-width: 1280px; margin: 0 auto; padding: 0 20px; }
+.empty-msg { color: var(--midgray); font-style: italic; padding: 40px 0; text-align: center; }
+
+/* ── Top Bar ────────────────────────────────────────────────── */
+.top-bar {
+  background: #111;
+  color: #aaa;
+  font-family: var(--font-ui);
+  font-size: 0.74rem;
+  padding: 7px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.top-bar-date { color: #ccc; letter-spacing: 0.03em; }
+.top-bar-links { display: flex; gap: 14px; align-items: center; }
+.top-bar-links a { color: #aaa; transition: color 0.15s; padding: 2px 0; }
+.top-bar-links a:hover { color: var(--red); }
+
+/* ── Breaking News Ticker ───────────────────────────────────── */
+.ticker-bar {
+  background: var(--red);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  font-family: var(--font-ui);
+  font-size: 0.82rem;
+  height: 36px;
+}
+.ticker-bar.ticker-paused .ticker-track { animation-play-state: paused; }
+.ticker-label {
+  background: rgba(0,0,0,0.28);
+  padding: 0 18px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  flex-shrink: 0;
+  border-right: 1px solid rgba(255,255,255,0.2);
+}
+.ticker-track-wrap { overflow: hidden; flex: 1; height: 100%; display: flex; align-items: center; }
+.ticker-track {
+  display: flex;
+  animation: ticker-scroll 40s linear infinite;
+  white-space: nowrap;
+}
+.ticker-track:hover { animation-play-state: paused; }
+.ticker-item { padding: 0 40px 0 16px; display: inline-block; }
+.ticker-item::after { content: "◆"; margin-left: 40px; opacity: 0.4; font-size: 0.6em; }
+@keyframes ticker-scroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+/* ── Header — WHITE background like screenshot ──────────────── */
+.site-header {
+  background: var(--white);
+  color: var(--black);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  border-bottom: 2px solid var(--red);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+}
+.header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  max-width: 1280px;
+  margin: 0 auto;
+  gap: 20px;
+}
+.site-logo {
+  font-family: var(--font-head);
+  font-size: 2rem;
+  font-weight: 900;
+  letter-spacing: -1.5px;
+  color: var(--black);
+  white-space: nowrap;
+  line-height: 1;
+}
+.site-logo span { color: var(--red); }
+.header-tagline {
+  font-family: var(--font-ui);
+  font-size: 0.66rem;
+  color: var(--midgray);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-top: 4px;
+}
+.header-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.btn-header {
+  font-family: var(--font-ui);
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: var(--radius);
+  transition: background 0.18s, color 0.18s, border-color 0.18s;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+.btn-header-outline { border: 1px solid var(--lightgray); 
+  color: var(--black);
+} 
+.btn-header-outline:hover { background: var(--lightgray); }
+.btn-header-red { background: var(--red); color: var(--white); }
+.btn-header-red:hover { background: var(--red-dark); }
+.user-chip { display: none; align-items: center; gap: 10px; color: var(--black); font-family: var(--font-ui); font-size: 0.84rem; }
+.user-chip.visible { display: flex; }
+.user-chip .user-name { font-weight: 600; }
+
+/* ── Category Navigation Bar ─────────────────────────────── */
+.category-nav-bar {
+  background: var(--white);
+  border-bottom: 1px solid var(--lightgray);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.category-nav-bar::-webkit-scrollbar { display: none; }
+#categoryNav {
+  display: flex;
+  padding: 0 20px;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+.nav-btn {
+  font-family: var(--font-ui);
+  font-size: 0.79rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--gray);
+  padding: 13px 18px;
+  border-bottom: 3px solid transparent;
+  transition: color 0.18s, border-color 0.18s;
+  white-space: nowrap;
+}
+.nav-btn:hover  { color: var(--black); }
+.nav-btn.active { color: var(--red); border-bottom-color: var(--red); }
+
+/* ── Category Badges ─────────────────────────────────────── */
+.cat-badge {
+  display: inline-block;
+  font-family: var(--font-ui);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 3px 9px;
+  border-radius: 2px;
+  color: var(--white);
+  margin-bottom: 10px;
+}
+.cat-general       { background: var(--red); }
+.cat-business      { background: #1A5276; }
+.cat-technology    { background: #117A65; }
+.cat-science       { background: #6C3483; }
+.cat-health        { background: #1E8449; }
+.cat-sports        { background: #784212; }
+.cat-entertainment { background: #B7950B; color: #000; }
+
+/* ── Section Heading — matches screenshot ────────────────────
+   Style: [RED FILLED BOX "BREAKING NEWS"] [────── red line ──]
+   ─────────────────────────────────────────────────────────── */
+.section-heading {
+  font-family: var(--font-ui);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--white);
+  background: var(--red);
+  padding: 9px 14px;
+  border-left: none;
+  border-radius: 2px;
+  margin-bottom: 26px;
+  display: inline-block;
+  /* The extending red line is added via a wrapper trick in the layout.
+     We wrap this element inside a flex row defined below. */
+}
+
+/* Flex wrapper row for section-heading + line — applied to the parent */
+.section-heading-row {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin-bottom: 26px;
+  width: 100%;
+}
+.section-heading-row .section-heading {
+  margin-bottom: 0;
+  flex-shrink: 0;
+}
+.section-heading-row::after {
+  content: '';
+  flex: 1;
+  height: 2px;
+  background: var(--red);
+  display: block;
+  margin-left: 0;
+}
+
+/* Fallback: if no wrapper, still look decent */
+.section-heading:not(.section-heading-row .section-heading) {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  width: 100%;
+  background: transparent;
+  padding: 0;
+  color: var(--red);
+}
+.section-heading:not(.section-heading-row .section-heading)::before {
+  content: attr(data-text);
+  background: var(--red);
+  color: var(--white);
+  padding: 9px 14px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+.section-heading:not(.section-heading-row .section-heading)::after {
+  content: '';
+  flex: 1;
+  height: 2px;
+  background: var(--red);
+}
+
+/* ── Page Layout  */
+.page-layout {
+  display: grid;
+  grid-template-columns: 1fr 310px;
+  gap: 32px;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 36px 20px 60px;
+}
+@media (max-width: 960px) {
+  .page-layout { grid-template-columns: 1fr; }
+  .sidebar { display: none; }
+}
+
+/* ── Hero Container — centered and slightly narrower than full width ─
+   Keeps the hero image attractive without spanning edge-to-edge on wide screens
+   ─────────────────────────────────────────────────────────── */
+#heroContainer {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* ── Hero Card — centered layout with a generous but not full-screen width ─
+   Flat edge-to-edge image, text overlaid at bottom-left
+   ─────────────────────────────────────────────────────────── */
+.hero-card {
+  position: relative;
+  background: var(--black);
+  border-radius: 0;
+  overflow: hidden;
+  cursor: pointer;
+  margin: 0 auto 0;
+  transition: box-shadow 0.25s;
+  min-height: 60vh;
+  max-width: 1240px;
+}
+.hero-card:hover { box-shadow: var(--shadow-xl); }
+
+.hero-img-wrap {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  z-index: 0;
+}
+.hero-img-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: brightness(0.72);
+  transition: transform 0.5s;
+}
+.hero-card:hover .hero-img-wrap img { transform: scale(1.04); }
+
+/* Gradient overlay — darker at bottom for text legibility */
+.hero-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(0,0,0,0.1) 0%,
+    rgba(0,0,0,0.2) 30%,
+    rgba(0,0,0,0.82) 100%
+  );
+  z-index: 1;
+}
+
+.hero-scroll-hint {
+  margin-top: 32px;
+  font-family: var(--font-ui);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.5);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+@keyframes bounceDown {
+  0%, 100% { transform: translateY(0); opacity: 0.5; }
+  50% { transform: translateY(6px); opacity: 1; }
+}
+
+.hero-body {
+  position: relative;
+  z-index: 2;
+  min-height: 300px;
+  padding: 36px 36px 60px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  max-width: 900px;
+}
+
+/* Hero labels row: BREAKING badge + category pill side by side */
+.hero-labels {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+  align-items: center;
+}
+
+/* "BREAKING" red filled badge — matches screenshot */
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-ui);
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  padding: 5px 10px;
+  border-radius: 2px;
+  background: var(--red);
+  color: #fff;
+}
+
+/* Category pill — translucent white, like screenshot */
+.hero-category-pill {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-ui);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  padding: 5px 12px;
+  border-radius: 2px;
+  background: rgba(255,255,255,0.15);
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.25);
+}
+
+.hero-title {
+  font-family: var(--font-head);
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  font-weight: 900;
+  line-height: 1.08;
+  margin-bottom: 16px;
+  color: var(--white);
+  letter-spacing: -0.5px;
+}
+.hero-summary {
+  color: rgba(255,255,255,0.88);
+  font-size: 0.96rem;
+  line-height: 1.7;
+  margin-bottom: 18px;
+  font-family: var(--font-body);
+}
+.hero-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  font-family: var(--font-ui);
+  font-size: 0.84rem;
+  color: rgba(255,255,255,0.78);
+  margin-bottom: 0;
+}
+.hero-meta span { display: inline-flex; align-items: center; gap: 6px; }
+
+/* ── Cards Grid ──────────────────────────────────────────── */
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+/* ── News Card ───────────────────────────────────────────── */
+.news-card {
+  background: var(--white);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.news-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Card image — category badge overlaid on image top-right like screenshot */
+.card-img-wrap {
+  overflow: hidden;
+  height: 190px;
+  position: relative;
+}
+.card-img-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s;
+}
+.news-card:hover .card-img-wrap img { transform: scale(1.05); }
+
+/* ── Category label on top-right of card image (screenshot style) ─ */
+.card-img-wrap .card-cat-overlay {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-family: var(--font-ui);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--white);
+  padding: 3px 8px;
+  border-radius: 2px;
+  z-index: 2;
+}
+/* Breaking badge on top-left of card image */
+.card-img-wrap .card-breaking-overlay {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  font-family: var(--font-ui);
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--white);
+  background: var(--red);
+  padding: 3px 8px;
+  border-radius: 2px;
+  z-index: 2;
+}
+
+.card-body {
+  padding: 16px 16px 18px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+.card-title {
+  font-family: var(--font-head);
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.35;
+  margin-bottom: 8px;
+  color: var(--black);
+  letter-spacing: -0.1px;
+}
+.card-summary {
+  font-size: 0.85rem;
+  color: var(--gray);
+  line-height: 1.6;
+  margin-bottom: 12px;
+  flex: 1;
+}
+
+/* ── Meta ────────────────────────────────────────────────── */
+.meta {
+  display: flex;
+  gap: 12px;
+  font-family: var(--font-ui);
+  font-size: 0.72rem;
+  color: var(--midgray);
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.meta span { display: flex; align-items: center; gap: 4px; }
+
+/* ── Read More Button ────────────────────────────────────── */
+.read-more-btn {
+  font-family: var(--font-ui);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--red);
+  border: 1.5px solid var(--red);
+  padding: 7px 16px;
+  border-radius: var(--radius);
+  align-self: flex-start;
+  transition: background 0.18s, color 0.18s;
+}
+.read-more-btn:hover { background: var(--red); color: var(--white); }
+
+/* ── Sidebar ─────────────────────────────────────────────── */
+.sidebar-widget { margin-bottom: 28px; }
+.sidebar-widget-latest { margin-top: 16px; }
+.sidebar-widget-title {
+  font-family: var(--font-ui);
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--white);
+  background: var(--red);
+  padding: 9px 14px;
+  border-left: none;
+  margin-bottom: 0;
+  border-radius: 2px 2px 0 0;
+}
+.sidebar-article-list {
+  background: var(--white);
+  box-shadow: var(--shadow);
+  border-radius: 0 0 var(--radius-md) var(--radius-md);
+  overflow: hidden;
+}
+.sidebar-article-item {
+  display: flex;
+  gap: 12px;
+  padding: 12px 14px;
+  border-bottom: 1px solid #f0ede8;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.sidebar-article-item:last-child { border-bottom: none; }
+.sidebar-article-item:hover { background: #f8f5f2; }
+.sidebar-article-item img {
+  width: 66px; height: 50px;
+  object-fit: cover;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+.sidebar-article-item-body { flex: 1; }
+.sidebar-article-item-title {
+  font-family: var(--font-head);
+  font-size: 0.82rem;
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--black);
+  margin-bottom: 4px;
+}
+.sidebar-article-item-meta {
+  font-family: var(--font-ui);
+  font-size: 0.67rem;
+  color: var(--midgray);
+}
+
+/* ── Rank number for Most Read ───────────────────────────── */
+.sidebar-rank {
+  font-family: var(--font-head);
+  font-size: 1.4rem;
+  font-weight: 900;
+  color: var(--lightgray);
+  line-height: 1;
+  flex-shrink: 0;
+  width: 26px;
+  text-align: center;
+  align-self: center;
+}
+
+/* ── Footer ──────────────────────────────────────────────── */
+.site-footer {
+  background: var(--black);
+  color: var(--midgray);
+  text-align: center;
+  padding: 28px 20px;
+  font-family: var(--font-ui);
+  font-size: 0.82rem;
+  border-top: 3px solid var(--red);
+}
+.site-footer a { color: var(--red); }
+.site-footer strong { color: var(--white); }
+
+/* ── Responsive ──────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .hero-body    { padding: 22px 20px 24px; }
+  .hero-title   { font-size: 1.45rem; }
+  .cards-grid   { grid-template-columns: repeat(2, 1fr); }
+  .site-logo    { font-size: 1.6rem; }
+}
+@media (max-width: 600px) {
+  .site-logo        { font-size: 1.3rem; }
+  .header-tagline   { display: none; }
+  .cards-grid       { grid-template-columns: 1fr; }
+  .hero-body        { padding: 18px 16px 20px; }
+  .hero-card        { min-height: 100vh; }
+}

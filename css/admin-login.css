@@ -1,0 +1,34 @@
+/* ============================================================
+   admin-login.css — Nepal Khabar Admin Login Page Styles
+   ============================================================ */
+
+.admin-login-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: #C0392B;
+  color: #fff;
+  font-family: var(--font-ui);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 5px 14px;
+  border-radius: 3px;
+  margin-bottom: 18px;
+}
+.admin-login-badge::before { content: "⚙"; font-size: 0.85rem; }
+
+.auth-card.admin-card {
+  border-top: 4px solid #C0392B;
+}
+
+.back-to-user-login {
+  display: block;
+  text-align: center;
+  margin-top: 18px;
+  font-family: var(--font-ui);
+  font-size: 0.8rem;
+  color: var(--midgray);
+}
+.back-to-user-login a { color: var(--red); }
