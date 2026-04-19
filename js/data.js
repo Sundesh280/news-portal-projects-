@@ -39,12 +39,6 @@ const DB = {
   deleteComment(commentId) { this._get('comments','action=delete&id='+encodeURIComponent(commentId)); },
   getAllComments() { var r=this._get('comments','action=get_all'); return(r&&r.ok)?r.comments:{}; },
 
-  /* Subscribers */
-  getSubscribers() { var r=this._get('subscribers','action=get_all'); return(r&&r.ok)?r.subscribers:[]; },
-  getSubscriberByEmail(email) { var r=this._get('subscribers','action=get_by_email&email='+encodeURIComponent(email)); return(r&&r.ok)?r.subscriber:null; },
-  addSubscriber(data) { var r=this._post('subscribers','action=add',data); return(r&&r.ok)?{ok:true,subscriber:r.subscriber}:{ok:false,error:(r&&r.error)?r.error:'Failed.'}; },
-  deleteSubscriber(id) { this._get('subscribers','action=delete&id='+encodeURIComponent(id)); },
-
   /* Submissions */
   getSubmissions() { var r=this._get('submissions','action=get_all'); return(r&&r.ok)?r.submissions:[]; },
   addSubmission(data) { var r=this._post('submissions','action=add',data); return(r&&r.ok)?{id:r.id}:null; },

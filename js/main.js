@@ -45,8 +45,7 @@ document.addEventListener('DOMContentLoaded', function() {
   var userInfo  = document.getElementById('topBarUserInfo');
   var userName  = document.getElementById('topBarUserName');
   var logoutBtn = document.getElementById('topBarLogout');
-  var fromAdmin = new URLSearchParams(window.location.search).get('from') === 'admin';
-  var showSess  = session && (session.role !== 'admin' || fromAdmin);
+  var showSess  = !!session;
   if (showSess) {
     if (loginLink) loginLink.style.display='none';
     if (regLink)   regLink.style.display='none';

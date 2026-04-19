@@ -20,7 +20,6 @@ document.addEventListener('DOMContentLoaded', function() {
   buildUserTable();
   buildAllComments();
   buildAllSubmissions();
-  buildSubscribersTable();
   setupArticleForm();
   setupSidebarNav();
   initTickerManager();
@@ -232,21 +231,6 @@ function buildAllSubmissions(filterStatus) {
 }
 function updateSubStatus(id,status){ DB.updateSubmissionStatus(id,status); var fs=document.getElementById('submissionFilter'); buildAllSubmissions(fs?fs.value:'all'); }
 function deleteSubm(id){ if(!confirm('Delete this submission?'))return; DB.deleteSubmission(id); var fs=document.getElementById('submissionFilter'); buildAllSubmissions(fs?fs.value:'all'); }
-
-/* SUBSCRIBERS */
-function buildSubscribersTable() {
-  var tbody=document.getElementById('subscribersTableBody'), countEl=document.getElementById('subscriberCount');
-  if (!tbody) return;
-  var subs=DB.getSubscribers();
-  if (countEl) countEl.textContent=subs.length+' subscriber'+(subs.length!==1?'s':'');
-  if (subs.length===0){ tbody.innerHTML='<tr><td colspan="6" class="empty-msg" style="text-align:center;padding:28px;">No subscribers yet.</td></tr>'; return; }
-  var html='';
-  subs.forEach(function(s) {
-    html+='<tr><td>'+escHtml(s.firstName+' '+s.lastName)+'</td><td>'+escHtml(s.email)+'</td><td>'+escHtml(s.location||'—')+'</td><td>'+escHtml(s.phone||'—')+'</td><td>'+new Date(s.joinedAt).toLocaleDateString('en-NP')+'</td><td><button class="btn-delete" onclick="deleteSub(\''+s.id+'\')">Remove</button></td></tr>';
-  });
-  tbody.innerHTML=html;
-}
-function deleteSub(id){ if(!confirm('Remove this subscriber?'))return; DB.deleteSubscriber(id); buildSubscribersTable(); }
 
 /* Helpers */
 function val(id){ var el=document.getElementById(id); return el?el.value.trim():''; }

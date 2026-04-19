@@ -49,7 +49,6 @@ if (empty($_SESSION['user_id']) || $_SESSION['user_role'] !== 'admin') {
       <button class="sidebar-btn"        data-section="sectionComments">💬 Comments</button>
       <button class="sidebar-btn"        data-section="sectionTicker">📡 Live Ticker</button>
       <button class="sidebar-btn"        data-section="sectionSubmissions">📨 Submissions</button>
-      <button class="sidebar-btn"        data-section="sectionSubscribers">✉️ Subscribers</button>
     </aside>
 
     <!-- Main panel -->
@@ -169,20 +168,6 @@ if (empty($_SESSION['user_id']) || $_SESSION['user_role'] !== 'admin') {
           </div>
         </div>
         <div id="submissionsList"></div>
-      </div>
-
-      <!-- Subscribers Section -->
-      <div class="admin-section" id="sectionSubscribers">
-        <div class="section-header-row">
-          <h2 class="section-title">✉️ Subscribers</h2>
-          <span id="subscriberCount" style="font-size:0.85rem;color:#8C8C8C;font-family:'DM Sans',sans-serif;"></span>
-        </div>
-        <table class="users-table">
-          <thead>
-            <tr><th>Name</th><th>Email</th><th>Location</th><th>Phone</th><th>Joined</th><th>Action</th></tr>
-          </thead>
-          <tbody id="subscribersTableBody"></tbody>
-        </table>
       </div>
 
     </main>

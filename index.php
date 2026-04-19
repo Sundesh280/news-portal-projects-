@@ -126,24 +126,13 @@
     </main>
   </div>
 
-  <!-- CITIZEN JOURNALISM BANNER -->
-  <div style="background:linear-gradient(135deg,#0D0D0D 0%,#1E1E1E 60%,#3D0C0C 100%);padding:40px 20px;text-align:center;border-top:4px solid #C0392B;margin-top:40px;">
-    <div style="max-width:640px;margin:0 auto;">
-      <div style="display:inline-block;background:#C0392B;color:#fff;font-family:'DM Sans',sans-serif;font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;padding:4px 14px;border-radius:20px;margin-bottom:14px;">📰 Citizen Journalism</div>
-      <h2 style="font-family:'Playfair Display',Georgia,serif;font-size:clamp(1.4rem,4vw,2rem);font-weight:900;color:#fff;margin-bottom:10px;">Have a Local Story to Share?</h2>
-      <p style="font-family:'DM Sans',sans-serif;font-size:0.92rem;color:rgba(255,255,255,0.72);margin-bottom:22px;">Subscribe and send us your local news, incidents and stories — तपाईंको समाचार नेपालसम्म पुर्‍याउनुहोस्</p>
-      <a href="subscribe.php" style="background:#C0392B;color:#fff;font-family:'DM Sans',sans-serif;font-size:0.95rem;font-weight:700;padding:13px 30px;border-radius:4px;text-decoration:none;display:inline-block;transition:background 0.18s;" onmouseover="this.style.background='#96281B'" onmouseout="this.style.background='#C0392B'">✉️ Subscribe &amp; Share News →</a>
-    </div>
-  </div>
-
   <!-- FOOTER -->
   <footer class="site-footer">
     <p>© 2026 <strong>Nepal Khabar</strong> · नेपाल खबर · All rights reserved</p>
     <p style="margin-top:8px;">
       <a href="index.php">Home</a> &nbsp;·&nbsp;
       <a href="login.php">Login</a> &nbsp;·&nbsp;
-      <a href="register.php">Register</a> &nbsp;·&nbsp;
-      <a href="subscribe.php" style="color:var(--red);font-weight:700;">📰 Share Your News</a>
+      <a href="register.php">Register</a>
     </p>
   </footer>
 
