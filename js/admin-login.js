@@ -1,75 +1,38 @@
-/* ============================================================
-   admin-login.js — Nepal Khabar Admin Login Logic
-   ============================================================ */
+/* admin-login.js */
+document.addEventListener('DOMContentLoaded', function() {
+  var existing = DB.getSession();
+  if (existing && existing.role === 'admin') { window.location.href='admin.php'; return; }
 
-document.addEventListener('DOMContentLoaded', function () {
-  // If already logged in as admin, go directly to admin panel
-  const session = DB.getSession();
-  if (session && session.role === 'admin') {
-    window.location.href = 'admin.html';
-    return;
-  }
-  // If logged in as regular user, send them back to homepage
-  if (session && session.role !== 'admin') {
-    window.location.href = 'index.html';
-    return;
-  }
+  var emailEl   = document.getElementById('adminLoginEmail');
+  var passEl    = document.getElementById('adminLoginPassword');
+  var submitBtn = document.getElementById('adminLoginSubmit');
+  var msgEl     = document.getElementById('adminLoginMsg');
 
-  const emailEl  = document.getElementById('adminLoginEmail');
-  const passEl   = document.getElementById('adminLoginPassword');
-  const submitBtn = document.getElementById('adminLoginSubmit');
-  const msgEl    = document.getElementById('adminLoginMsg');
-  const toggleBtn = document.getElementById('adminTogglePass');
-
-  submitBtn.addEventListener('click', doAdminLogin);
-  document.getElementById('adminLoginForm').addEventListener('keydown', function (e) {
-    if (e.key === 'Enter') doAdminLogin();
-  });
+  if (submitBtn) submitBtn.addEventListener('click', doAdminLogin);
+  if (emailEl)   emailEl.addEventListener('keydown', function(e){ if(e.key==='Enter') doAdminLogin(); });
+  if (passEl)    passEl.addEventListener('keydown',  function(e){ if(e.key==='Enter') doAdminLogin(); });
 
   function doAdminLogin() {
-    const email    = emailEl.value.trim();
-    const password = passEl.value.trim();
-
-    if (!email || !password) {
-      showMsg(msgEl, 'Please enter your admin email and password.', 'error');
-      return;
-    }
-
-    const result = DB.loginUser(email, password);
-    if (!result.ok) {
-      showMsg(msgEl, 'Invalid credentials. Access denied.', 'error');
-      return;
-    }
-
-    // Only allow admin role
+    var email    = emailEl ? emailEl.value.trim() : '';
+    var password = passEl  ? passEl.value.trim()  : '';
+    if (!email||!password) { showMsg(msgEl,'Please enter email and password.','error'); return; }
+    var result = DB.loginUser(email, password);
+    if (!result.ok) { showMsg(msgEl, result.error, 'error'); return; }
     if (result.user.role !== 'admin') {
-      DB.logout(); // Immediately log them back out
-      showMsg(msgEl, 'This account does not have admin privileges.', 'error');
+      DB.logout();
+      showMsg(msgEl,'This account does not have admin access.','error');
       return;
     }
-
-    showMsg(msgEl, 'Access granted. Redirecting to admin panel…', 'success');
-    setTimeout(function () {
-      window.location.href = 'admin.html';
-    }, 900);
+    showMsg(msgEl,'Welcome! Redirecting to admin panel…','success');
+    setTimeout(function(){ window.location.href='admin.php'; }, 800);
   }
 
+  var toggleBtn = document.getElementById('adminTogglePass');
   if (toggleBtn) {
-    toggleBtn.addEventListener('click', function () {
-      if (passEl.type === 'password') {
-        passEl.type = 'text';
-        toggleBtn.textContent = '🙈';
-      } else {
-        passEl.type = 'password';
-        toggleBtn.textContent = '👁';
-      }
+    toggleBtn.addEventListener('click', function() {
+      if (passEl.type==='password'){ passEl.type='text'; toggleBtn.textContent='🙈'; }
+      else { passEl.type='password'; toggleBtn.textContent='👁'; }
     });
   }
 });
-
-function showMsg(el, text, type) {
-  if (!el) return;
-  el.textContent   = text;
-  el.className     = 'form-msg ' + type;
-  el.style.display = 'block';
-}
+function showMsg(el,text,type){ if(!el)return; el.textContent=text; el.className='form-msg '+type; el.style.display='block'; }

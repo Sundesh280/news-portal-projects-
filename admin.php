@@ -1,3 +1,11 @@
+<?php
+session_start();
+// Block non-admins from accessing this page directly
+if (empty($_SESSION['user_id']) || $_SESSION['user_role'] !== 'admin') {
+    header('Location: admin-login.php');
+    exit;
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -19,9 +27,9 @@
       <small>Admin Panel</small>
     </div>
     <div class="admin-user-info">
-      <span>Logged in as <strong id="adminName"></strong></span>
-      <a href="index.html?from=admin" class="btn-admin-logout" style="margin-right:4px;">← View Site</a>
-      <button class="btn-admin-logout" id="adminLogoutBtn">Logout</button>
+      <span>Logged in as <strong><?php echo htmlspecialchars($_SESSION['user_name']); ?></strong></span>
+      <a href="index.php?from=admin" class="btn-admin-logout" style="margin-right:4px;">← View Site</a>
+      <a href="logout.php" class="btn-admin-logout" onclick="sessionStorage.clear();">Logout</a>
     </div>
   </header>
 
@@ -47,7 +55,6 @@
     <!-- Main panel -->
     <main class="admin-main">
 
-    
       <!-- ══ Live Ticker Section ═══════════════════════════ -->
       <div class="admin-section" id="sectionTicker">
         <div class="section-header-row">
@@ -58,16 +65,12 @@
             <button class="btn-ticker-master" id="tickerMasterBtn">⏸ Stop All</button>
           </div>
         </div>
-
-        <!-- Live preview -->
         <div class="ticker-preview-wrap">
           <div class="ticker-preview-label">LIVE PREVIEW</div>
           <div class="ticker-preview-bar" id="tickerPreviewBar">
             <span class="ticker-preview-track" id="tickerPreviewTrack"></span>
           </div>
         </div>
-
-        <!-- Add new headline -->
         <div class="ticker-add-card">
           <div class="ticker-add-title">➕ Add New Headline</div>
           <div class="ticker-add-row">
@@ -76,8 +79,6 @@
           </div>
           <div id="tickerAddMsg" class="form-msg" style="margin-top:10px;"></div>
         </div>
-
-        <!-- Headlines list -->
         <div class="ticker-headlines-header">
           <span>All Headlines <span id="tickerCount" class="ticker-count-badge">0</span></span>
           <span class="ticker-hint">Each headline has: Remove · Rewrite · Start/Stop</span>
@@ -87,8 +88,6 @@
 
       <!-- ══ Articles Section ═══════════════════════════ -->
       <div class="admin-section" id="sectionArticles">
-
-        <!-- Add / Edit / Rewrite form -->
         <div class="article-form-card" id="articleForm">
           <div class="form-mode-badge" id="formModeBadge">✏️ New Article</div>
           <div class="form-grid">
@@ -135,8 +134,6 @@
             <div id="formMsg" class="form-msg" style="flex:1;"></div>
           </div>
         </div>
-
-        <!-- Article list -->
         <div id="adminArticleList"></div>
       </div>
 

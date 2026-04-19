@@ -1,3 +1,11 @@
+<?php
+session_start();
+// If already logged in as admin, go directly to admin panel
+if (!empty($_SESSION['user_id']) && $_SESSION['user_role'] === 'admin') {
+    header('Location: admin.php');
+    exit;
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13,17 +21,15 @@
 </head>
 <body class="auth-page">
 
-  <!-- ═══ HEADER ═════════════════════════════════════ -->
   <header class="site-header">
     <div class="header-inner">
-      <a href="index.html" class="site-logo">Nepal<span>Khabar</span></a>
+      <a href="index.php" class="site-logo">Nepal<span>Khabar</span></a>
       <div class="header-actions">
-        <a href="index.html" class="btn-header btn-header-outline">← Back to Site</a>
+        <a href="index.php" class="btn-header btn-header-outline">← Back to Site</a>
       </div>
     </div>
   </header>
 
-  <!-- ═══ ADMIN LOGIN FORM ══════════════════════════════ -->
   <main class="auth-main">
     <div class="auth-card admin-card" id="adminLoginForm">
       <span class="admin-login-badge">Admin Access</span>
@@ -48,17 +54,15 @@
       <div id="adminLoginMsg" class="form-msg"></div>
 
       <p class="back-to-user-login">
-        Not an admin? <a href="login.html">User login →</a>
+        Not an admin? <a href="login.php">User login →</a>
       </p>
     </div>
   </main>
 
-  <!-- ═══ FOOTER ══════════════════════════════════════ -->
   <footer class="site-footer">
     <p>© 2026 <strong>Nepal Khabar</strong> · नेपाल खबर</p>
   </footer>
 
-  <!-- Scripts -->
   <script src="js/data.js"></script>
   <script src="js/admin-login.js"></script>
 </body>
