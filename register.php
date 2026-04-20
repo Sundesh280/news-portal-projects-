@@ -1,4 +1,5 @@
 <?php
+session_name('nk_user');
 session_start();
 // If already logged in, redirect to home
 if (!empty($_SESSION['user_id'])) {
