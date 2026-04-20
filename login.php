@@ -1,12 +1,9 @@
 <?php
+session_name('nk_user');
 session_start();
-// If already logged in, redirect to home
-if (!empty($_SESSION['user_id'])) {
-    if ($_SESSION['user_role'] === 'admin') {
-        header('Location: admin.php');
-    } else {
-        header('Location: index.php');
-    }
+// If already logged in as a regular user, redirect to home
+if (!empty($_SESSION['user_id']) && $_SESSION['user_role'] !== 'admin') {
+    header('Location: index.php');
     exit;
 }
 ?>
