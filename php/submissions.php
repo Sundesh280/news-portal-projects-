@@ -20,20 +20,36 @@ if ($action === 'get_all') {
 // ADD submission
 if ($action === 'add') {
     $data     = json_decode(file_get_contents('php://input'), true);
+
+    $title_en = trim($data['titleEn']  ?? '');
+    $title_np = trim($data['titleNp']  ?? '');
+    $body_en  = trim($data['bodyEn']   ?? '');
+    $body_np  = trim($data['bodyNp']   ?? '');
+
+    // BUG FIX #2 (submissions): Validate title and body are not empty before inserting
+    if (!$title_en && !$title_np) {
+        echo json_encode(['ok' => false, 'error' => 'Title is required.']);
+        exit;
+    }
+    if (!$body_en && !$body_np) {
+        echo json_encode(['ok' => false, 'error' => 'Article body is required.']);
+        exit;
+    }
+
     $id       = 'sub-news-' . time() . '-' . rand(100,999);
     $sub_id   = $conn->real_escape_string($data['subscriberId']       ?? '');
     $sub_name = $conn->real_escape_string($data['subscriberName']     ?? '');
     $sub_email= $conn->real_escape_string($data['subscriberEmail']    ?? '');
     $sub_loc  = $conn->real_escape_string($data['subscriberLocation'] ?? '');
-    $title_en = $conn->real_escape_string($data['titleEn']    ?? '');
-    $title_np = $conn->real_escape_string($data['titleNp']    ?? '');
+    $title_en = $conn->real_escape_string($title_en);
+    $title_np = $conn->real_escape_string($title_np);
     $location = $conn->real_escape_string($data['location']   ?? '');
     $date     = $conn->real_escape_string($data['date']       ?? date('Y-m-d'));
     $category = $conn->real_escape_string($data['category']   ?? 'general');
     $sum_en   = $conn->real_escape_string($data['summaryEn']  ?? '');
     $sum_np   = $conn->real_escape_string($data['summaryNp']  ?? '');
-    $body_en  = $conn->real_escape_string($data['bodyEn']     ?? '');
-    $body_np  = $conn->real_escape_string($data['bodyNp']     ?? '');
+    $body_en  = $conn->real_escape_string($body_en);
+    $body_np  = $conn->real_escape_string($body_np);
     $source   = $conn->real_escape_string($data['source']     ?? '');
     $photo    = $conn->real_escape_string($data['photo']      ?? '');
 

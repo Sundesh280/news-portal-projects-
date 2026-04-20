@@ -43,6 +43,16 @@ if ($action === 'add') {
     $author     = $conn->real_escape_string($data['author']     ?? '');
     $date       = date('Y-m-d');
 
+    // BUG FIX #2: Validate that title and content are not empty before inserting
+    if (!$title_en && !$title) {
+        echo json_encode(['ok' => false, 'error' => 'Title is required.']);
+        exit;
+    }
+    if (!$content_en && !$content) {
+        echo json_encode(['ok' => false, 'error' => 'Content is required.']);
+        exit;
+    }
+
     $sql = "INSERT INTO articles (id,category,title,title_en,summary,summary_en,content,content_en,image,author,date,views)
             VALUES ('$id','$category','$title','$title_en','$summary','$summary_en','$content','$content_en','$image','$author','$date',0)";
     echo $conn->query($sql) ? json_encode(['ok' => true, 'id' => $id]) : json_encode(['ok' => false, 'error' => $conn->error]);
@@ -73,6 +83,11 @@ if ($action === 'update') {
 // DELETE article
 if ($action === 'delete') {
     $id = $conn->real_escape_string($_GET['id']);
+
+    // BUG FIX #1: Delete related comments first to avoid orphaned records in the database
+    $conn->query("DELETE FROM comments WHERE article_id='$id'");
+
+    // Now delete the article itself
     $conn->query("DELETE FROM articles WHERE id='$id'");
     echo json_encode(['ok' => true]);
     exit;
@@ -81,7 +96,14 @@ if ($action === 'delete') {
 // INCREMENT views
 if ($action === 'increment_views') {
     $id = $conn->real_escape_string($_GET['id']);
-    $conn->query("UPDATE articles SET views = views + 1 WHERE id='$id'");
+
+    // BUG FIX #4: Only increment views once per session using a session flag
+    session_start();
+    $sessionKey = 'viewed_' . $id;
+    if (empty($_SESSION[$sessionKey])) {
+        $conn->query("UPDATE articles SET views = views + 1 WHERE id='$id'");
+        $_SESSION[$sessionKey] = true; // mark as viewed for this session
+    }
     echo json_encode(['ok' => true]);
     exit;
 }
@@ -109,7 +131,7 @@ function fmt($row) {
         'image'     => $row['image'],
         'author'    => $row['author'],
         'date'      => $row['date'],
-        'views'     => (int)$row['views'],
+        'views'     => (int)($row['views'] ?? 0), // BUG FIX #9: safe cast — avoids NaN if DB returns null
         'isStopped' => (bool)$row['is_stopped'],
     ];
 }

@@ -4,24 +4,33 @@ header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST');
 header('Access-Control-Allow-Headers: Content-Type');
 
-session_start();
-require 'db.php';
-
 $action = isset($_GET['action']) ? $_GET['action'] : '';
 
-// LOGIN
+// Admin login uses nk_admin session, user login uses nk_user session
 if ($action === 'login') {
     $data     = json_decode(file_get_contents('php://input'), true);
-    $email    = $conn->real_escape_string(strtolower(trim($data['email']    ?? '')));
-    $password = $conn->real_escape_string(trim($data['password'] ?? ''));
+    $email    = trim(strtolower($data['email']    ?? ''));
+    $password = trim($data['password'] ?? '');
 
-    $result = $conn->query("SELECT * FROM users WHERE email='$email' AND password='$password' LIMIT 1");
+    require 'db.php';
+    $emailEsc = $conn->real_escape_string($email);
+    $passEsc  = $conn->real_escape_string($password);
+
+    $result = $conn->query("SELECT * FROM users WHERE email='$emailEsc' AND password='$passEsc' LIMIT 1");
     $user   = $result->fetch_assoc();
 
     if (!$user) {
         echo json_encode(['ok' => false, 'error' => 'Invalid email or password.']);
         exit;
     }
+
+    // Use separate session names for admin vs user
+    if ($user['role'] === 'admin') {
+        session_name('nk_admin');
+    } else {
+        session_name('nk_user');
+    }
+    session_start();
 
     $_SESSION['user_id']    = $user['id'];
     $_SESSION['user_name']  = $user['name'];
@@ -32,25 +41,53 @@ if ($action === 'login') {
     exit;
 }
 
-// LOGOUT
+// LOGOUT — destroy the correct session based on who calls it
 if ($action === 'logout') {
+    // Try to destroy user session
+    session_name('nk_user');
+    session_start();
     session_destroy();
     echo json_encode(['ok' => true]);
     exit;
 }
 
-// GET SESSION
+// ADMIN LOGOUT
+if ($action === 'admin_logout') {
+    session_name('nk_admin');
+    session_start();
+    session_destroy();
+    echo json_encode(['ok' => true]);
+    exit;
+}
+
+// GET SESSION — check the correct session based on context
 if ($action === 'get_session') {
+    // Try user session first
+    session_name('nk_user');
+    session_start();
     if (!empty($_SESSION['user_id'])) {
         echo json_encode(['ok' => true, 'user' => ['id' => $_SESSION['user_id'], 'name' => $_SESSION['user_name'], 'email' => $_SESSION['user_email'], 'role' => $_SESSION['user_role']]]);
-    } else {
-        echo json_encode(['ok' => false]);
+        exit;
     }
+    echo json_encode(['ok' => false]);
+    exit;
+}
+
+// GET ADMIN SESSION
+if ($action === 'get_admin_session') {
+    session_name('nk_admin');
+    session_start();
+    if (!empty($_SESSION['user_id'])) {
+        echo json_encode(['ok' => true, 'user' => ['id' => $_SESSION['user_id'], 'name' => $_SESSION['user_name'], 'email' => $_SESSION['user_email'], 'role' => $_SESSION['user_role']]]);
+        exit;
+    }
+    echo json_encode(['ok' => false]);
     exit;
 }
 
 // REGISTER
 if ($action === 'register') {
+    require 'db.php';
     $data     = json_decode(file_get_contents('php://input'), true);
     $name     = $conn->real_escape_string(trim($data['name']     ?? ''));
     $email    = $conn->real_escape_string(strtolower(trim($data['email']    ?? '')));
@@ -73,8 +110,9 @@ if ($action === 'register') {
     exit;
 }
 
-// GET ALL USERS
+// GET ALL USERS (admin only)
 if ($action === 'get_all') {
+    require 'db.php';
     $result = $conn->query("SELECT id, name, email, role, joined_at FROM users ORDER BY joined_at DESC");
     $users  = [];
     while ($row = $result->fetch_assoc()) { $users[] = $row; }
@@ -82,8 +120,9 @@ if ($action === 'get_all') {
     exit;
 }
 
-// DELETE USER
+// DELETE USER (admin only)
 if ($action === 'delete') {
+    require 'db.php';
     $id = $conn->real_escape_string($_GET['id']);
     $conn->query("DELETE FROM users WHERE id='$id' AND role != 'admin'");
     echo json_encode(['ok' => true]);

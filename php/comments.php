@@ -4,6 +4,7 @@ header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST');
 header('Access-Control-Allow-Headers: Content-Type');
 
+session_name('nk_user');
 session_start();
 require 'db.php';
 
@@ -60,11 +61,11 @@ if ($action === 'add') {
 // EDIT comment
 if ($action === 'edit') {
     if (empty($_SESSION['user_id'])) { echo json_encode(['ok' => false, 'error' => 'Login required.']); exit; }
-    $data = json_decode(file_get_contents('php://input'), true);
-    $id = $conn->real_escape_string($data['id'] ?? '');
-    $text = $conn->real_escape_string(trim($data['text'] ?? ''));
+    $data    = json_decode(file_get_contents('php://input'), true);
+    $id      = $conn->real_escape_string($data['id'] ?? '');
+    $text    = $conn->real_escape_string(trim($data['text'] ?? ''));
     $user_id = $_SESSION['user_id'];
-    $role = $_SESSION['user_role'];
+    $role    = $_SESSION['user_role'];
 
     if (!$text) { echo json_encode(['ok' => false, 'error' => 'Comment cannot be empty.']); exit; }
 
@@ -73,7 +74,7 @@ if ($action === 'edit') {
     } else {
         $sql = "UPDATE comments SET text_body='$text' WHERE id='$id' AND user_id='$user_id'";
     }
-    
+
     if ($conn->query($sql)) {
         if ($conn->affected_rows > 0) {
             echo json_encode(['ok' => true]);
@@ -89,16 +90,22 @@ if ($action === 'edit') {
 // DELETE comment
 if ($action === 'delete') {
     if (empty($_SESSION['user_id'])) { echo json_encode(['ok' => false, 'error' => 'Login required.']); exit; }
-    $id = $conn->real_escape_string($_GET['id']);
+    $id      = $conn->real_escape_string($_GET['id']);
     $user_id = $_SESSION['user_id'];
-    $role = $_SESSION['user_role'];
-    
+    $role    = $_SESSION['user_role'];
+
     if ($role === 'admin') {
         $conn->query("DELETE FROM comments WHERE id='$id'");
     } else {
         $conn->query("DELETE FROM comments WHERE id='$id' AND user_id='$user_id'");
     }
-    echo json_encode(['ok' => true]);
+
+    // BUG FIX #3: Check affected_rows to confirm deletion actually happened
+    if ($conn->affected_rows > 0) {
+        echo json_encode(['ok' => true]);
+    } else {
+        echo json_encode(['ok' => false, 'error' => 'Comment not found or not authorised.']);
+    }
     exit;
 }
 
