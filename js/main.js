@@ -40,17 +40,19 @@ document.addEventListener('DOMContentLoaded', function() {
   if (dateEl) dateEl.textContent = new Date().toLocaleDateString('en-NP',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
 
   var session   = DB.getSession();
+  // Admin session must NEVER appear in user panel top bar
+  var userSession = (session && session.role !== 'admin') ? session : null;
   var loginLink = document.getElementById('topBarLogin');
   var regLink   = document.getElementById('topBarRegister');
   var userInfo  = document.getElementById('topBarUserInfo');
   var userName  = document.getElementById('topBarUserName');
   var logoutBtn = document.getElementById('topBarLogout');
-  var showSess  = !!session;
+  var showSess  = !!userSession;
   if (showSess) {
     if (loginLink) loginLink.style.display='none';
     if (regLink)   regLink.style.display='none';
     if (userInfo)  userInfo.style.display='inline';
-    if (userName)  userName.textContent=session.name+(session.role==='admin'?' (Admin)':'');
+    if (userName)  userName.textContent=userSession.name;
   } else {
     if (loginLink) loginLink.style.display='inline-flex';
     if (regLink)   regLink.style.display='inline-flex';
@@ -74,7 +76,15 @@ function buildCategoryNav() {
       btn.classList.add('active');
       var h = document.getElementById('sectionHeading');
       if (h) h.textContent = CAT_LABELS[cat];
+      // If user is inside article view, close it first then show selected category
+      var articleView = document.getElementById('articleView');
+      var homeView    = document.getElementById('homeView');
+      if (articleView && articleView.style.display !== 'none') {
+        articleView.style.display = 'none';
+        if (homeView) homeView.style.display = '';
+      }
       renderArticles(cat);
+      window.scrollTo({top: 0, behavior: 'smooth'});
     });
     nav.appendChild(btn);
   });

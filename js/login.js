@@ -1,8 +1,9 @@
 /* login.js */
 document.addEventListener('DOMContentLoaded', function() {
   var existing = DB.getSession();
-  if (existing) {
-    window.location.href = existing.role === 'admin' ? 'admin.php' : 'index.php';
+  // Only redirect if already logged in as a regular user — admin session must NOT take over user login page
+  if (existing && existing.role !== 'admin') {
+    window.location.href = 'index.php';
     return;
   }
   var form      = document.getElementById('loginForm');

@@ -18,11 +18,10 @@ document.addEventListener('DOMContentLoaded', function() {
   buildAdminNav();
   renderAdminArticles(adminCurrentCat);
   buildUserTable();
-  buildAllComments();
-  buildAllSubmissions();
   setupArticleForm();
   setupSidebarNav();
   initTickerManager();
+  // BUG FIX #6: Set active class on sidebar button on initial page load
   showSection('sectionArticles');
 });
 
@@ -60,6 +59,13 @@ function showSection(id) {
   document.querySelectorAll('.sidebar-btn').forEach(function(b){ b.classList.remove('active'); });
   var active = document.querySelector('.sidebar-btn[data-section="'+id+'"]');
   if (active) active.classList.add('active');
+  // Start real-time polling when Comments tab is opened, stop when leaving
+  if (id === 'sectionComments') {
+    startCommentsPoll();
+  } else {
+    stopCommentsPoll();
+  }
+  if (id === 'sectionUsers') buildUserTable();
 }
 
 /* TICKER MANAGER */
@@ -68,7 +74,8 @@ function initTickerManager() {
   var addBtn = document.getElementById('tickerAddBtn');
   var addInp = document.getElementById('tickerNewText');
   if (addBtn) addBtn.addEventListener('click', addTickerHeadline);
-  if (addInp) addInp.addEventListener('keydown', function(e){ if(e.key==='Enter') addTickerHeadline(); });
+  // BUG FIX #5: Use a flag to prevent double-submit on rapid Enter key press
+  if (addInp) addInp.addEventListener('keydown', function(e){ if(e.key==='Enter'){ e.preventDefault(); addTickerHeadline(); } });
   var masterBtn = document.getElementById('tickerMasterBtn');
   if (masterBtn) masterBtn.addEventListener('click', function() { setTickerAllStopped(); renderTickerMasterControl(); renderTickerPreview(); renderTickerHeadlines(); });
 }
@@ -148,7 +155,9 @@ function renderAdminArticles(cat) {
   var html='';
   filtered.forEach(function(art) {
     var stopped=art.isStopped;
-    html+='<div class="admin-art-row'+(stopped?' stopped-article':'')+'"><img src="'+art.image+'" alt="" onerror="this.src=\'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=400&q=60\'" /><div class="admin-art-info"><div><span class="cat-badge cat-'+art.category+'">'+CAT_LABELS_ADMIN[art.category]+'</span>'+(stopped?'<span class="stopped-badge">Hidden</span>':'')+'</div><strong>'+escHtml(art.titleEn)+'</strong><small>'+art.date+' · '+art.author+' · '+(art.views||0)+' views</small></div><div class="admin-art-actions"><button class="btn-edit" onclick="startEdit(\''+art.id+'\')">✏ Edit</button><button class="btn-rewrite" onclick="startRewrite(\''+art.id+'\')">🔄 Rewrite</button><button class="btn-stop'+(stopped?' is-stopped':'')+'" onclick="toggleStop(\''+art.id+'\')">'+(stopped?'▶ Restore':'⏹ Stop')+'</button><button class="btn-delete" onclick="confirmDelete(\''+art.id+'\')">🗑 Delete</button></div></div>';
+    // BUG FIX #8: Use a local fallback image instead of hardcoded external Unsplash URL
+    var fallback = 'css/img-fallback.png';
+    html+='<div class="admin-art-row'+(stopped?' stopped-article':'')+'"><img src="'+art.image+'" alt="" onerror="this.src=\''+fallback+'\'" /><div class="admin-art-info"><div><span class="cat-badge cat-'+art.category+'">'+CAT_LABELS_ADMIN[art.category]+'</span>'+(stopped?'<span class="stopped-badge">Hidden</span>':'')+'</div><strong>'+escHtml(art.titleEn)+'</strong><small>'+art.date+' · '+art.author+' · '+(art.views||0)+' views</small></div><div class="admin-art-actions"><button class="btn-edit" onclick="startEdit(\''+art.id+'\')">✏ Edit</button><button class="btn-rewrite" onclick="startRewrite(\''+art.id+'\')">🔄 Rewrite</button><button class="btn-stop'+(stopped?' is-stopped':'')+'" onclick="toggleStop(\''+art.id+'\')">'+(stopped?'▶ Restore':'⏹ Stop')+'</button><button class="btn-delete" onclick="confirmDelete(\''+art.id+'\')">🗑 Delete</button></div></div>';
   });
   list.innerHTML=html;
 }
@@ -195,6 +204,23 @@ function buildUserTable() {
 function deleteUser(id){ if(confirm('Remove this user?')){ DB.deleteUser(id); buildUserTable(); } }
 
 /* COMMENTS */
+var _commentsPollTimer = null;
+
+function startCommentsPoll() {
+  stopCommentsPoll();
+  buildAllComments();
+  _commentsPollTimer = setInterval(function() {
+    var sec = document.getElementById('sectionComments');
+    if (sec && sec.style.display !== 'none') {
+      buildAllComments();
+    }
+  }, 5000);
+}
+
+function stopCommentsPoll() {
+  if (_commentsPollTimer) { clearInterval(_commentsPollTimer); _commentsPollTimer = null; }
+}
+
 function buildAllComments() {
   var list=document.getElementById('allCommentsList');
   if (!list) return;
@@ -203,12 +229,12 @@ function buildAllComments() {
     (all[artId]||[]).forEach(function(c) {
       hasAny=true;
       var art=articles.find(function(a){ return a.id===artId; });
-      html+='<div class="admin-comment-row"><div class="admin-comment-info"><strong>'+escHtml(c.name)+'</strong><span class="comment-article-title">on: '+escHtml(art?art.titleEn:artId)+'</span><p>'+escHtml(c.text)+'</p><small>'+c.date+'</small></div><button class="btn-delete" onclick="adminDeleteComment(\''+artId+'\',\''+c.id+'\')">Delete</button></div>';
+      html+='<div class="admin-comment-row"><div class="admin-comment-info"><strong>'+escHtml(c.name)+'</strong><span class="comment-article-title">on: '+escHtml(art?art.titleEn:artId)+'</span><p>'+escHtml(c.text)+'</p><small>'+c.date+'</small></div><button class="btn-delete" onclick="adminDeleteComment(\''+c.id+'\')">Delete</button></div>';
     });
   });
   list.innerHTML=hasAny?html:'<p class="empty-msg">No comments yet.</p>';
 }
-function adminDeleteComment(artId,cId){ DB.deleteComment(artId,cId); buildAllComments(); }
+function adminDeleteComment(cId){ DB.deleteComment(cId); buildAllComments(); }
 
 /* SUBMISSIONS */
 function buildAllSubmissions(filterStatus) {
@@ -223,7 +249,9 @@ function buildAllSubmissions(filterStatus) {
   submissions.forEach(function(sub) {
     var sc=sub.status==='approved'?'status-approved':sub.status==='rejected'?'status-rejected':'status-pending';
     var sl=sub.status==='approved'?'✅ Approved':sub.status==='rejected'?'❌ Rejected':'⏳ Pending';
-    html+='<div class="submission-row" id="srow-'+sub.id+'"><div class="submission-header"><div class="submission-meta-left"><span class="cat-badge cat-'+(sub.category||'general')+'">'+sub.category+'</span><span class="submission-status-badge '+sc+'">'+sl+'</span></div><div class="submission-meta-right"><span>📅 '+(sub.date||'—')+'</span><span>📍 '+escHtml(sub.location||'—')+'</span></div></div>'+(sub.titleEn?'<div class="submission-title-en">'+escHtml(sub.titleEn)+'</div>':'')+' <div class="submission-submitter">By: <strong>'+escHtml(sub.subscriberName)+'</strong> &lt;'+escHtml(sub.subscriberEmail)+'&gt;</div>';
+    // BUG FIX #7: Apply escHtml to sub.category to prevent XSS injection
+    var safeCat = escHtml(sub.category || 'general');
+    html+='<div class="submission-row" id="srow-'+sub.id+'"><div class="submission-header"><div class="submission-meta-left"><span class="cat-badge cat-'+safeCat+'">'+safeCat+'</span><span class="submission-status-badge '+sc+'">'+sl+'</span></div><div class="submission-meta-right"><span>📅 '+(sub.date||'—')+'</span><span>📍 '+escHtml(sub.location||'—')+'</span></div></div>'+(sub.titleEn?'<div class="submission-title-en">'+escHtml(sub.titleEn)+'</div>':'')+' <div class="submission-submitter">By: <strong>'+escHtml(sub.subscriberName)+'</strong> &lt;'+escHtml(sub.subscriberEmail)+'&gt;</div>';
     if(sub.summaryEn||sub.summaryNp){ html+='<div class="submission-body-section"><div class="submission-section-label">Summary</div>'+(sub.summaryEn?'<p class="submission-text-en">'+escHtml(sub.summaryEn)+'</p>':'')+(sub.summaryNp?'<p class="submission-text-np">'+escHtml(sub.summaryNp)+'</p>':'')+'</div>'; }
     html+='<div class="submission-actions">'+(sub.status!=='approved'?'<button class="btn-sub-approve" onclick="updateSubStatus(\''+sub.id+'\',\'approved\')">✅ Approve</button>':'')+(sub.status!=='rejected'?'<button class="btn-sub-reject" onclick="updateSubStatus(\''+sub.id+'\',\'rejected\')">❌ Reject</button>':'')+(sub.status!=='pending'?'<button class="btn-sub-pending" onclick="updateSubStatus(\''+sub.id+'\',\'pending\')">⏳ Pending</button>':'')+'<button class="btn-delete" onclick="deleteSubm(\''+sub.id+'\')">🗑 Delete</button></div></div>';
   });

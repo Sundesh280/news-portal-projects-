@@ -55,12 +55,14 @@ function closeArticle() {
 
 function loadComments(artId) {
   var session     = DB.getSession();
+  // Only show session if it's a regular user (not admin leaking into user panel)
+  var userSession = (session && session.role !== 'admin') ? session : null;
   var commentForm = document.getElementById('commentForm');
   var commentLocked = document.getElementById('commentLocked');
   var commentList = document.getElementById('commentList');
   var submitBtn   = document.getElementById('commentSubmit');
   if (submitBtn) submitBtn.dataset.artId = artId;
-  if (session) {
+  if (userSession) {
     if (commentForm)   commentForm.style.display   = '';
     if (commentLocked) commentLocked.style.display = 'none';
   } else {
@@ -71,7 +73,7 @@ function loadComments(artId) {
   if (!commentList) return;
   if (comments.length === 0) { commentList.innerHTML='<p style="color:#aaa;font-size:0.88rem;">No comments yet.</p>'; return; }
   commentList.innerHTML = comments.map(function(c){
-    var isOwner = session && (session.id === c.userId || session.role === 'admin');
+    var isOwner = userSession && (userSession.id === c.userId || userSession.role === 'admin');
     var actionsHtml = isOwner ? '<div class="comment-actions"><button class="btn-edit-comment" onclick="editCommentUI(\''+artId+'\', \''+c.id+'\')">Edit</button> <button class="btn-delete-comment" onclick="deleteCommentUI(\''+artId+'\', \''+c.id+'\')">Delete</button></div>' : '';
     return '<div class="comment-item" id="comment-item-'+c.id+'"><span class="comment-name">'+escHtml(c.name)+'</span><span class="comment-date">'+escHtml(c.date)+'</span><p class="comment-text" id="comment-text-'+c.id+'">'+escHtml(c.text)+'</p>'+actionsHtml+'</div>';
   }).join('');

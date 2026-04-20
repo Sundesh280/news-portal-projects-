@@ -28,7 +28,9 @@ const DB = {
   registerUser(name,email,password) { var r=this._post('users','action=register',{name,email,password}); return(r&&r.ok)?{ok:true}:{ok:false,error:(r&&r.error)?r.error:'Registration failed.'}; },
   loginUser(email,password) { var r=this._post('users','action=login',{email,password}); if(r&&r.ok){sessionStorage.setItem('nk__session',JSON.stringify(r.user));return{ok:true,user:r.user};} return{ok:false,error:(r&&r.error)?r.error:'Login failed.'}; },
   logout() { this._get('users','action=logout'); sessionStorage.removeItem('nk__session'); },
+  adminLogout() { this._get('users','action=admin_logout'); sessionStorage.removeItem('nk__admin_session'); },
   getSession() { var c=sessionStorage.getItem('nk__session'); if(c){try{return JSON.parse(c);}catch(e){}} var r=this._get('users','action=get_session'); if(r&&r.ok&&r.user){sessionStorage.setItem('nk__session',JSON.stringify(r.user));return r.user;} return null; },
+  getAdminSession() { var c=sessionStorage.getItem('nk__admin_session'); if(c){try{return JSON.parse(c);}catch(e){}} var r=this._get('users','action=get_admin_session'); if(r&&r.ok&&r.user){sessionStorage.setItem('nk__admin_session',JSON.stringify(r.user));return r.user;} return null; },
   deleteUser(id) { this._get('users','action=delete&id='+encodeURIComponent(id)); },
   saveUsers() {},
 

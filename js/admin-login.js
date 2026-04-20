@@ -1,6 +1,9 @@
-/* admin-login.js */
+/* admin-login.js — Admin Authentication Module */
+
 document.addEventListener('DOMContentLoaded', function() {
-  var existing = DB.getSession();
+
+  // Check if an admin session already exists — use getAdminSession (separate from user session)
+  var existing = DB.getAdminSession();
   if (existing && existing.role === 'admin') { window.location.href='admin.php'; return; }
 
   var emailEl   = document.getElementById('adminLoginEmail');
@@ -15,14 +18,21 @@ document.addEventListener('DOMContentLoaded', function() {
   function doAdminLogin() {
     var email    = emailEl ? emailEl.value.trim() : '';
     var password = passEl  ? passEl.value.trim()  : '';
+
     if (!email||!password) { showMsg(msgEl,'Please enter email and password.','error'); return; }
+
     var result = DB.loginUser(email, password);
     if (!result.ok) { showMsg(msgEl, result.error, 'error'); return; }
+
     if (result.user.role !== 'admin') {
       DB.logout();
       showMsg(msgEl,'This account does not have admin access.','error');
       return;
     }
+
+    // Store admin session separately so it never leaks into user panel
+    sessionStorage.setItem('nk__admin_session', JSON.stringify(result.user));
+
     showMsg(msgEl,'Welcome! Redirecting to admin panel…','success');
     setTimeout(function(){ window.location.href='admin.php'; }, 800);
   }
@@ -35,4 +45,5 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 });
+
 function showMsg(el,text,type){ if(!el)return; el.textContent=text; el.className='form-msg '+type; el.style.display='block'; }
