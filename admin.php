@@ -1,4 +1,5 @@
 <?php
+session_name('nk_admin');
 session_start();
 // Block non-admins from accessing this page directly
 if (empty($_SESSION['user_id']) || $_SESSION['user_role'] !== 'admin') {
@@ -29,7 +30,7 @@ if (empty($_SESSION['user_id']) || $_SESSION['user_role'] !== 'admin') {
     <div class="admin-user-info">
       <span>Logged in as <strong><?php echo htmlspecialchars($_SESSION['user_name']); ?></strong></span>
       <a href="index.php?from=admin" class="btn-admin-logout" style="margin-right:4px;">← View Site</a>
-      <a href="logout.php" class="btn-admin-logout" onclick="sessionStorage.clear();">Logout</a>
+      <a href="logout-admin.php" class="btn-admin-logout" onclick="sessionStorage.removeItem('nk__admin_session');">Logout</a>
     </div>
   </header>
 
@@ -48,7 +49,7 @@ if (empty($_SESSION['user_id']) || $_SESSION['user_role'] !== 'admin') {
       <button class="sidebar-btn"        data-section="sectionUsers">👥 Users</button>
       <button class="sidebar-btn"        data-section="sectionComments">💬 Comments</button>
       <button class="sidebar-btn"        data-section="sectionTicker">📡 Live Ticker</button>
-      <button class="sidebar-btn"        data-section="sectionSubmissions">📨 Submissions</button>
+
     </aside>
 
     <!-- Main panel -->
@@ -149,26 +150,11 @@ if (empty($_SESSION['user_id']) || $_SESSION['user_role'] !== 'admin') {
 
       <!-- Comments Section -->
       <div class="admin-section" id="sectionComments">
-        <h2 class="section-title">💬 All Comments</h2>
+        <h2 class="section-title">💬 All Comments <span style="font-size:0.75rem;color:#27ae60;font-family:'DM Sans',sans-serif;font-weight:500;margin-left:10px;">🔴 Live — updates every 5s</span></h2>
         <div id="allCommentsList"></div>
       </div>
 
-      <!-- Submissions Section -->
-      <div class="admin-section" id="sectionSubmissions">
-        <div class="section-header-row">
-          <h2 class="section-title">📨 Citizen News Submissions</h2>
-          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
-            <select id="submissionFilter" style="padding:7px 12px;border:1.5px solid #E8E8E8;border-radius:4px;font-size:0.85rem;background:#fff;cursor:pointer;">
-              <option value="all">All Submissions</option>
-              <option value="pending">⏳ Pending</option>
-              <option value="approved">✅ Approved</option>
-              <option value="rejected">❌ Rejected</option>
-            </select>
-            <span id="submissionCount" style="font-size:0.8rem;color:#8C8C8C;font-family:'DM Sans',sans-serif;"></span>
-          </div>
-        </div>
-        <div id="submissionsList"></div>
-      </div>
+
 
     </main>
   </div>
