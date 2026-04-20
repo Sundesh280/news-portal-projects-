@@ -1,4 +1,4 @@
-<?php session_start(); ?>
+<?php session_name('nk_user'); session_start(); ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -117,7 +117,7 @@
             <button class="btn-post-comment" id="commentSubmit">Post Comment</button>
             <div id="commentMsg" class="form-msg"></div>
           </div>
-          <div class="comment-locked" id="commentLocked">
+          <div class="comment-locked" id="commentLocked" style="display:none;">
             🔒 You must <a href="login.php">sign in</a> or <a href="register.php">register</a> to leave a comment.
           </div>
         </div>
