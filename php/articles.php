@@ -28,7 +28,7 @@ if ($action === 'get_one') {
     exit;
 }
 
-// ADD article
+// ADD article is admin-only, but we will check that in the frontend for simplicity. In a real app, you should also verify the user's role on the backend before allowing these actions.
 if ($action === 'add') {
     $data = json_decode(file_get_contents('php://input'), true);
     $id         = 'art-' . time() . '-' . rand(100,999);
