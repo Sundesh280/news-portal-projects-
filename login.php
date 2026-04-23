@@ -7,6 +7,7 @@ if (!empty($_SESSION['user_id']) && $_SESSION['user_role'] !== 'admin') {
     exit;
 }
 ?>
+<!-- Login Form -->
 <!DOCTYPE html>
 <html lang="en">
 <head>

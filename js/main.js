@@ -31,24 +31,24 @@ function applyTickerState() {
     : headlines.filter(function (h) {
         return h.active;
       });
-  var track = document.getElementById("tickerTrack");
-  if (track) {
-    track.innerHTML =
-      active.length > 0
-        ? active
-            .map(function (h) {
-              return (
-                '<span class="ticker-item">' +
-                h.text
-                  .replace(/&/g, "&amp;")
-                  .replace(/</g, "&lt;")
-                  .replace(/>/g, "&gt;") +
-                "</span>"
-              );
-            })
-            .join("")
-        : '<span class="ticker-item">— No active breaking news —</span>';
+ var track = document.getElementById("tickerTrack");
+if (track) {
+  var items = '';
+  if (active.length > 0) {
+    for (var i = 0; i < active.length; i++) {
+      var safeText = active[i].text
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+      items += '<span class="ticker-item">' + safeText + '</span>';
+    }
+  } else {
+    items = '<span class="ticker-item">— No active breaking news —</span>';
   }
+  track.innerHTML = items;
+ var duration = track.scrollWidth / 2 / 80;
+  track.style.animationDuration = duration + 's';
+}
   if (allStopped || active.length === 0) {
     ticker.classList.add("ticker-paused");
     if (label) label.textContent = "⏹ Breaking";

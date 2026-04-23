@@ -29,13 +29,19 @@ document.addEventListener("DOMContentLoaded", function () {
       showMsg(msgEl, "Password must be at least 6 characters.", "error");
       return;
     }
+    var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      showMsg(msgEl, "Please enter a valid email address.", "error");
+      return;
+    }
+    
     var result = DB.registerUser(name, email, password);
     if (!result.ok) {
       showMsg(msgEl, result.error, "error");
       return;
     }
     DB.loginUser(email, password);
-    showMsg(msgEl, "Account created! Redirecting…", "success");
+    showMsg(msgEl, "Account created!", "success");
     setTimeout(function () {
       window.location.href = "index.php";
     }, 1000);

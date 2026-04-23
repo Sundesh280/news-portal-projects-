@@ -7,6 +7,7 @@ if (!empty($_SESSION['user_id'])) {
     exit;
 }
 ?>
+<!-- Register Form -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
