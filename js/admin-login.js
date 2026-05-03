@@ -1,5 +1,4 @@
-/* admin-login.js - Admin Login Page */
-
+/** admin-login.js - Admin Login Page */
 var adminEmailEl = null;
 var adminPassEl  = null;
 var adminMsgEl   = null;
