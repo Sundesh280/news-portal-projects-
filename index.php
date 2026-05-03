@@ -17,8 +17,8 @@
   <div class="top-bar">
     <span class="top-bar-date" id="topBarDate"></span>
     <div class="top-bar-links">
-      <a href="login.php"    id="topBarLogin">🔐 Login</a>
-      <a href="register.php" id="topBarRegister">📝 Register</a>
+      <a href="php/login.php"    id="topBarLogin">🔐 Login</a>
+      <a href="php/register.php" id="topBarRegister">📝 Register</a>
       <span id="topBarUserInfo" style="display:none; color:#ccc;">
         👤 <span id="topBarUserName"></span>
         &nbsp;<a href="#" id="topBarLogout" style="color:var(--red);">Logout</a>
@@ -48,11 +48,16 @@
   <!-- CATEGORY NAV -->
   <nav class="category-nav-bar" id="categoryNavBar">
     <div id="categoryNav"></div>
+    <div class="search-box" style="margin-left: auto; padding-right: 15px; display: flex; align-items: center;">
+      <input type="text" id="searchInput" placeholder="Search..." style="padding: 4px 12px; border-radius: 20px; border: 1px solid #ccc; outline: none; font-family: inherit; width: 140px; font-size: 0.9rem; max-width: 100%;">
+    </div>
   </nav>
 
   <!-- HOME VIEW -->
   <div id="homeView">
-    <div id="heroContainer"></div>
+    <div class="container" style="max-width: 1200px; margin: 0 auto; padding: 0 20px;">
+      <div id="heroContainer"></div>
+    </div>
     <div class="page-layout">
       <main>
         <div class="section-heading" id="sectionHeading">📰 Top Stories</div>
@@ -118,10 +123,9 @@
             <div id="commentMsg" class="form-msg"></div>
           </div>
           <div class="comment-locked" id="commentLocked" style="display:none;">
-            🔒 You must <a href="login.php">sign in</a> or <a href="register.php">register</a> to leave a comment.
+            🔒 You must <a href="php/login.php">sign in</a> or <a href="php/register.php">register</a> to leave a comment.
           </div>
         </div>
-
       </div>
     </main>
   </div>
@@ -131,8 +135,8 @@
     <p>© 2026 <strong>Nepal Khabar</strong> · नेपाल खबर · All rights reserved</p>
     <p style="margin-top:8px;">
       <a href="index.php">Home</a> &nbsp;·&nbsp;
-      <a href="login.php">Login</a> &nbsp;·&nbsp;
-      <a href="register.php">Register</a>
+      <a href="php/login.php">Login</a> &nbsp;·&nbsp;
+      <a href="php/register.php">Register</a>
     </p>
   </footer>
 

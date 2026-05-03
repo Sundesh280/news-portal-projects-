@@ -3,12 +3,13 @@ session_name('nk_admin');
 session_start();
 // Block non-admins from accessing this page directly
 if (empty($_SESSION['user_id']) || $_SESSION['user_role'] !== 'admin') {
-    header('Location: admin-login.php');
-    exit;
+  header('Location: php/admin-login.php');
+  exit;
 }
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -19,6 +20,7 @@ if (empty($_SESSION['user_id']) || $_SESSION['user_role'] !== 'admin') {
   <link rel="stylesheet" href="css/style.css" />
   <link rel="stylesheet" href="css/admin.css" />
 </head>
+
 <body class="admin-page">
 
   <!-- ADMIN HEADER -->
@@ -30,7 +32,7 @@ if (empty($_SESSION['user_id']) || $_SESSION['user_role'] !== 'admin') {
     <div class="admin-user-info">
       <span>Logged in as <strong><?php echo htmlspecialchars($_SESSION['user_name']); ?></strong></span>
       <a href="index.php?from=admin" class="btn-admin-logout" style="margin-right:4px;">← View Site</a>
-      <a href="logout-admin.php" class="btn-admin-logout" onclick="sessionStorage.removeItem('nk__admin_session');">Logout</a>
+      <a href="php/logout.php" class="btn-admin-logout" onclick="sessionStorage.removeItem('nk__admin_session');">Logout</a>
     </div>
   </header>
 
@@ -46,9 +48,10 @@ if (empty($_SESSION['user_id']) || $_SESSION['user_role'] !== 'admin') {
     <aside class="admin-sidebar">
       <p class="sidebar-section-label">Manage</p>
       <button class="sidebar-btn active" data-section="sectionArticles">📰 Articles</button>
-      <button class="sidebar-btn"        data-section="sectionUsers">👥 Users</button>
-      <button class="sidebar-btn"        data-section="sectionComments">💬 Comments</button>
-      <button class="sidebar-btn"        data-section="sectionTicker">📡 Live Ticker</button>
+      <button class="sidebar-btn" data-section="sectionUsers">👥 Users</button>
+      <button class="sidebar-btn" data-section="sectionComments">💬 Comments</button>
+      <button class="sidebar-btn" data-section="sectionTicker">📡 Live Ticker</button>
+      <button class="sidebar-btn" data-section="sectionLiveNews">🌐 Live News</button>
 
     </aside>
 
@@ -142,7 +145,13 @@ if (empty($_SESSION['user_id']) || $_SESSION['user_role'] !== 'admin') {
         <h2 class="section-title">👥 Registered Users</h2>
         <table class="users-table">
           <thead>
-            <tr><th>Name</th><th>Email</th><th>Role</th><th>Joined</th><th>Action</th></tr>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Role</th>
+              <th>Joined</th>
+              <th>Action</th>
+            </tr>
           </thead>
           <tbody id="usersTableBody"></tbody>
         </table>
@@ -154,12 +163,41 @@ if (empty($_SESSION['user_id']) || $_SESSION['user_role'] !== 'admin') {
         <div id="allCommentsList"></div>
       </div>
 
+      <!-- ====== LIVE NEWS SECTION ====== -->
+      <!-- Admin fetches real news from newsdata.io and decides what to publish -->
+      <div class="admin-section" id="sectionLiveNews">
+        <h2 class="section-title">🌐 Live News from API</h2>
 
+        <!-- Category selector -->
+        <div style="margin-bottom:18px;">
+          <label for="liveNewsCat" style="font-weight:600;margin-right:10px;">Category:</label>
+          <select id="liveNewsCat" style="padding:6px 12px;border-radius:6px;border:1px solid #ddd;font-size:0.95rem;">
+            <option value="general">Top Stories (Latest)</option>
+            <option value="business">Business</option>
+            <option value="technology">Technology</option>
+            <option value="science">Science</option>
+            <option value="health">Health</option>
+            <option value="sports">Sports</option>
+            <option value="entertainment">Entertainment</option>
+          </select>
+          <button id="liveNewsLoadBtn" style="margin-left:10px;padding:7px 18px;background:#c0392b;color:#fff;border:none;border-radius:6px;cursor:pointer;font-weight:600;">
+            🔄 Fetch News
+          </button>
+        </div>
+
+        <!-- Status message -->
+        <div id="liveNewsMsg" style="margin-bottom:12px;font-size:0.9rem;color:#888;"></div>
+
+        <!-- News articles will be shown here -->
+        <div id="liveNewsList"></div>
+      </div>
 
     </main>
   </div>
 
   <script src="js/data.js"></script>
   <script src="js/admin.js"></script>
+
 </body>
+
 </html>

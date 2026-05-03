@@ -36,6 +36,7 @@ a {
   color: var(--red);
   text-decoration: none;
 }
+
 a:hover {
   text-decoration: underline;
 }
@@ -51,15 +52,18 @@ a:hover {
   align-items: center;
   padding: 6px 24px;
 }
+
 .top-bar-links {
   display: flex;
   gap: 16px;
   align-items: center;
 }
+
 .top-bar-links a {
   color: #ccc;
   font-size: 0.78rem;
 }
+
 .top-bar-links a:hover {
   color: var(--red);
   text-decoration: none;
@@ -76,6 +80,7 @@ a:hover {
   font-family: var(--font-ui);
   font-size: 0.82rem;
 }
+
 .ticker-label {
   flex-shrink: 0;
   background: rgba(0, 0, 0, 0.25);
@@ -86,28 +91,34 @@ a:hover {
   font-weight: 700;
   letter-spacing: 0.04em;
 }
+
 .ticker-track-wrap {
   flex: 1;
   overflow: hidden;
 }
+
 .ticker-track {
   display: flex;
   gap: 60px;
   animation: ticker-scroll linear infinite;
   white-space: nowrap;
 }
+
 .ticker-item {
   flex-shrink: 0;
   padding-right: 60px;
 }
+
 @keyframes ticker-scroll {
   0% {
     transform: translateX(100%);
   }
+
   100% {
     transform: translateX(-100%);
   }
 }
+
 .ticker-paused .ticker-track {
   animation-play-state: paused;
 }
@@ -118,6 +129,7 @@ a:hover {
   padding: 20px 24px;
   border-bottom: 3px solid var(--red);
 }
+
 .header-inner {
   max-width: 1200px;
   margin: 0 auto;
@@ -125,6 +137,7 @@ a:hover {
   justify-content: space-between;
   align-items: center;
 }
+
 .site-logo {
   font-family: var(--font-serif);
   font-size: 2rem;
@@ -132,15 +145,18 @@ a:hover {
   color: #fff;
   letter-spacing: -0.02em;
 }
+
 .site-logo span {
   color: var(--red);
 }
+
 .header-tagline {
   font-family: var(--font-ui);
   font-size: 0.75rem;
   color: rgba(255, 255, 255, 0.5);
   margin-top: 2px;
 }
+
 .header-actions {
   display: flex;
   gap: 10px;
@@ -161,20 +177,24 @@ a:hover {
   cursor: pointer;
   text-decoration: none;
 }
+
 .btn-header-outline {
   background: transparent;
   border: 1.5px solid rgba(255, 255, 255, 0.35);
   color: #fff;
 }
+
 .btn-header-outline:hover {
   border-color: #fff;
   background: rgba(255, 255, 255, 0.08);
   text-decoration: none;
 }
+
 .btn-header-red {
   background: var(--red);
   color: #fff;
 }
+
 .btn-header-red:hover {
   background: var(--red-dark);
   text-decoration: none;
@@ -191,6 +211,7 @@ a:hover {
   font-family: var(--font-ui);
   font-size: 0.82rem;
 }
+
 .user-chip .user-name {
   font-weight: 600;
 }
@@ -201,6 +222,7 @@ a:hover {
   align-items: center;
   gap: 8px;
 }
+
 .site-search input[type="search"],
 .site-search input[type="text"] {
   padding: 8px 10px;
@@ -214,11 +236,13 @@ a:hover {
     width 0.18s ease,
     box-shadow 0.18s ease;
 }
+
 .site-search input:focus {
   outline: none;
   width: 520px;
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
 }
+
 .site-search button {
   background: var(--red);
   color: #fff;
@@ -230,16 +254,20 @@ a:hover {
 }
 
 @media (max-width: 900px) {
+
   .site-search input[type="search"],
   .site-search input[type="text"] {
     width: 220px;
   }
+
   .site-search input:focus {
     width: 320px;
   }
+
   .header-inner {
     flex-wrap: wrap;
   }
+
   .header-actions {
     margin-top: 8px;
   }
@@ -258,12 +286,14 @@ a:hover {
   padding: 0 16px;
   max-width: 100%;
 }
-.category-nav-bar > div {
+
+.category-nav-bar>div {
   display: flex;
   gap: 2px;
   overflow-x: auto;
   align-items: center;
 }
+
 .nav-btn {
   background: none;
   border: none;
@@ -277,9 +307,11 @@ a:hover {
   white-space: nowrap;
   border-bottom: 2px solid transparent;
 }
+
 .nav-btn:hover {
   color: #fff;
 }
+
 .nav-btn.active {
   color: var(--red);
   border-bottom-color: var(--red);
@@ -320,6 +352,7 @@ a:hover {
   grid-template-columns: 1fr 340px;
   gap: 40px;
 }
+
 @media (max-width: 900px) {
   .page-layout {
     grid-template-columns: 1fr;
@@ -331,37 +364,45 @@ a:hover {
   cursor: pointer;
   position: relative;
   overflow: hidden;
-  border-radius: 0;
-  margin-bottom: 0;
+  border-radius: 12px;
+  margin-top: 24px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  background: #000;
 }
+
 .hero-img-wrap {
   width: 100%;
-  height: 480px;
+  height: 550px;
+  /* Good height for 1200px width */
   overflow: hidden;
 }
+
 .hero-img-wrap img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center 15%;
+  /* Keep the head/top area visible */
   transition: transform 0.4s;
 }
+
 .hero-card:hover .hero-img-wrap img {
   transform: scale(1.03);
 }
+
 .hero-body {
   position: absolute;
   bottom: 0;
   left: 0;
   right: 0;
   padding: 28px 32px;
-  background: linear-gradient(
-    0deg,
-    rgba(0, 0, 0, 0.88) 0%,
-    rgba(0, 0, 0, 0.4) 70%,
-    transparent 100%
-  );
+  background: linear-gradient(0deg,
+      rgba(0, 0, 0, 0.88) 0%,
+      rgba(0, 0, 0, 0.4) 70%,
+      transparent 100%);
   color: #fff;
 }
+
 .hero-title {
   font-family: var(--font-serif);
   font-size: clamp(1.3rem, 3vw, 2.1rem);
@@ -369,18 +410,21 @@ a:hover {
   margin-bottom: 10px;
   line-height: 1.2;
 }
+
 .hero-summary {
   font-size: 0.9rem;
   opacity: 0.85;
   margin-bottom: 12px;
   max-width: 700px;
 }
+
 .hero-labels {
   display: flex;
   gap: 8px;
   margin-bottom: 8px;
   align-items: center;
 }
+
 .hero-badge {
   background: var(--red);
   color: #fff;
@@ -391,6 +435,7 @@ a:hover {
   letter-spacing: 0.1em;
   border-radius: 2px;
 }
+
 .hero-category-pill {
   background: rgba(255, 255, 255, 0.15);
   color: #fff;
@@ -399,6 +444,7 @@ a:hover {
   padding: 3px 10px;
   border-radius: 20px;
 }
+
 .hero-meta {
   font-family: var(--font-ui);
   font-size: 0.78rem;
@@ -406,6 +452,7 @@ a:hover {
   display: flex;
   gap: 16px;
 }
+
 .hero-scroll-hint {
   font-family: var(--font-ui);
   font-size: 0.75rem;
@@ -426,11 +473,13 @@ a:hover {
   margin-bottom: 20px;
   margin-top: 28px;
 }
+
 .cards-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: 24px;
 }
+
 .news-card {
   background: var(--white);
   border: 1px solid var(--border);
@@ -441,27 +490,33 @@ a:hover {
     box-shadow 0.2s,
     transform 0.2s;
 }
+
 .news-card:hover {
   box-shadow: 0 8px 28px rgba(0, 0, 0, 0.1);
   transform: translateY(-2px);
 }
+
 .card-img-wrap {
   width: 100%;
   height: 170px;
   overflow: hidden;
 }
+
 .card-img-wrap img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   transition: transform 0.3s;
 }
+
 .news-card:hover .card-img-wrap img {
   transform: scale(1.05);
 }
+
 .card-body {
   padding: 16px;
 }
+
 .cat-badge {
   display: inline-block;
   font-family: var(--font-ui);
@@ -475,30 +530,37 @@ a:hover {
   background: var(--border);
   color: var(--muted);
 }
+
 .cat-business {
   background: #e8f4f8;
   color: #1a6b8a;
 }
+
 .cat-technology {
   background: #eef2ff;
   color: #4338ca;
 }
+
 .cat-science {
   background: #f0fdf4;
   color: #166534;
 }
+
 .cat-health {
   background: #fef2f2;
   color: #b91c1c;
 }
+
 .cat-sports {
   background: #fff7ed;
   color: #c2410c;
 }
+
 .cat-entertainment {
   background: #fdf4ff;
   color: #7e22ce;
 }
+
 .cat-general {
   background: #f1f5f9;
   color: #475569;
@@ -511,11 +573,13 @@ a:hover {
   margin-bottom: 8px;
   line-height: 1.3;
 }
+
 .card-summary {
   font-size: 0.85rem;
   color: var(--muted);
   margin-bottom: 12px;
 }
+
 .meta {
   font-family: var(--font-ui);
   font-size: 0.75rem;
@@ -524,6 +588,7 @@ a:hover {
   gap: 12px;
   margin-bottom: 12px;
 }
+
 .read-more-btn {
   background: none;
   border: 1.5px solid var(--red);
@@ -536,6 +601,7 @@ a:hover {
   cursor: pointer;
   transition: all 0.15s;
 }
+
 .read-more-btn:hover {
   background: var(--red);
   color: #fff;
@@ -550,12 +616,14 @@ a:hover {
   top: 120px;
   align-self: start;
 }
+
 .sidebar-widget {
   background: var(--white);
   border: 1px solid var(--border);
   border-radius: 8px;
   overflow: hidden;
 }
+
 .sidebar-widget-title {
   font-family: var(--font-ui);
   font-size: 0.75rem;
@@ -566,9 +634,11 @@ a:hover {
   border-bottom: 2px solid var(--border);
   background: #fafafa;
 }
+
 .sidebar-article-list {
   padding: 8px 0;
 }
+
 .sidebar-article-item {
   display: flex;
   align-items: flex-start;
@@ -577,9 +647,11 @@ a:hover {
   cursor: pointer;
   transition: background 0.15s;
 }
+
 .sidebar-article-item:hover {
   background: var(--bg);
 }
+
 .sidebar-article-item img {
   width: 56px;
   height: 42px;
@@ -587,6 +659,7 @@ a:hover {
   border-radius: 4px;
   flex-shrink: 0;
 }
+
 .sidebar-rank {
   width: 22px;
   height: 22px;
@@ -601,17 +674,20 @@ a:hover {
   justify-content: center;
   flex-shrink: 0;
 }
+
 .sidebar-article-item-title {
   font-size: 0.83rem;
   font-weight: 600;
   line-height: 1.3;
 }
+
 .sidebar-article-item-meta {
   font-family: var(--font-ui);
   font-size: 0.72rem;
   color: var(--muted);
   margin-top: 3px;
 }
+
 .sidebar-article-item-body {
   flex: 1;
   min-width: 0;
@@ -627,12 +703,15 @@ a:hover {
   font-size: 0.82rem;
   margin-top: 40px;
 }
+
 .site-footer a {
   color: rgba(255, 255, 255, 0.6);
 }
+
 .site-footer a:hover {
   color: var(--red);
 }
+
 .site-footer strong {
   color: #fff;
 }
@@ -653,11 +732,13 @@ a:hover {
   margin-top: 8px;
   display: none;
 }
+
 .form-msg.success {
   background: #d1fae5;
   color: #065f46;
   display: block;
 }
+
 .form-msg.error {
   background: #fee2e2;
   color: #991b1b;

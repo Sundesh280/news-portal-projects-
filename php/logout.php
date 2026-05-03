@@ -3,6 +3,6 @@
 session_name('nk_user');
 session_start();
 session_destroy();
-header('Location: index.php');
+header('Location: ../index.php'); // go back to home page
 exit;
 ?>

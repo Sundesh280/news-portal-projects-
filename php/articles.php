@@ -1,125 +1,181 @@
 <?php
+
 header('Content-Type: application/json; charset=utf-8');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST');
 header('Access-Control-Allow-Headers: Content-Type');
 
-require 'db.php';
+require 'db.php'; // connect to database
 
+// Read which action the browser is requesting
 $action = isset($_GET['action']) ? $_GET['action'] : '';
 
-// GET all articles
+// -------------------------------------------------------
+// GET ALL articles (sorted newest first)
+// -------------------------------------------------------
 if ($action === 'get_all') {
-    $result = $conn->query("SELECT * FROM articles ORDER BY date DESC, created_at DESC");
-    $articles = [];
+    $result   = $conn->query("SELECT * FROM articles ORDER BY date DESC, created_at DESC");
+    $articles = array();
+
     while ($row = $result->fetch_assoc()) {
-        $articles[] = fmt($row);
+        $articles[] = formatArticle($row);
     }
-    echo json_encode(['ok' => true, 'articles' => $articles]);
+
+    echo json_encode(array('ok' => true, 'articles' => $articles));
     exit;
 }
 
-// GET single article
+// -------------------------------------------------------
+// GET ONE article by its ID
+// -------------------------------------------------------
 if ($action === 'get_one') {
-    $id = $conn->real_escape_string($_GET['id']);
+    $id     = $conn->real_escape_string($_GET['id']);
     $result = $conn->query("SELECT * FROM articles WHERE id='$id' LIMIT 1");
-    $row = $result->fetch_assoc();
-    echo $row ? json_encode(['ok' => true, 'article' => fmt($row)]) : json_encode(['ok' => false, 'error' => 'Not found']);
+    $row    = $result->fetch_assoc();
+
+    if ($row) {
+        echo json_encode(array('ok' => true, 'article' => formatArticle($row)));
+    } else {
+        echo json_encode(array('ok' => false, 'error' => 'Not found'));
+    }
     exit;
 }
 
-// ADD article is admin-only, but we will check that in the frontend for simplicity. In a real app, you should also verify the user's role on the backend before allowing these actions.
+// -------------------------------------------------------
+// ADD a new article
+// -------------------------------------------------------
 if ($action === 'add') {
+    // Read the JSON data sent from the browser
     $data = json_decode(file_get_contents('php://input'), true);
-    $id         = 'art-' . time() . '-' . rand(100,999);
-    $category   = $conn->real_escape_string($data['category']   ?? 'general');
-    $title      = $conn->real_escape_string($data['title']      ?? '');
-    $title_en   = $conn->real_escape_string($data['titleEn']    ?? $title);
-    $summary    = $conn->real_escape_string($data['summary']    ?? '');
-    $summary_en = $conn->real_escape_string($data['summaryEn']  ?? $summary);
-    $content    = $conn->real_escape_string($data['content']    ?? '');
-    $content_en = $conn->real_escape_string($data['contentEn']  ?? $content);
-    $image      = $conn->real_escape_string($data['image']      ?? '');
-    $author     = $conn->real_escape_string($data['author']     ?? '');
-    $date       = date('Y-m-d');
 
-    // BUG FIX #2: Validate that title and content are not empty before inserting
+    // Generate a unique ID using the current time + random number
+    $id = 'art-' . time() . '-' . rand(100, 999);
+
+    // Read and clean each field from the submitted data
+    $category   = isset($data['category'])  ? $conn->real_escape_string($data['category'])  : 'general';
+    $title      = isset($data['title'])     ? $conn->real_escape_string($data['title'])      : '';
+    $title_en   = isset($data['titleEn'])   ? $conn->real_escape_string($data['titleEn'])   : $title;
+    $summary    = isset($data['summary'])   ? $conn->real_escape_string($data['summary'])   : '';
+    $summary_en = isset($data['summaryEn']) ? $conn->real_escape_string($data['summaryEn']) : $summary;
+    $content    = isset($data['content'])   ? $conn->real_escape_string($data['content'])   : '';
+    $content_en = isset($data['contentEn']) ? $conn->real_escape_string($data['contentEn']) : $content;
+    $image      = isset($data['image'])     ? $conn->real_escape_string($data['image'])     : '';
+    $author     = isset($data['author'])    ? $conn->real_escape_string($data['author'])    : '';
+    $date       = date('Y-m-d'); // today's date
+
+    // Validate: title is required
     if (!$title_en && !$title) {
-        echo json_encode(['ok' => false, 'error' => 'Title is required.']);
-        exit;
-    }
-    if (!$content_en && !$content) {
-        echo json_encode(['ok' => false, 'error' => 'Content is required.']);
+        echo json_encode(array('ok' => false, 'error' => 'Title is required.'));
         exit;
     }
 
-    $sql = "INSERT INTO articles (id,category,title,title_en,summary,summary_en,content,content_en,image,author,date,views)
-            VALUES ('$id','$category','$title','$title_en','$summary','$summary_en','$content','$content_en','$image','$author','$date',0)";
-    echo $conn->query($sql) ? json_encode(['ok' => true, 'id' => $id]) : json_encode(['ok' => false, 'error' => $conn->error]);
+    // Validate: content is required
+    if (!$content_en && !$content) {
+        echo json_encode(array('ok' => false, 'error' => 'Content is required.'));
+        exit;
+    }
+
+    // Insert into the database
+    $sql = "INSERT INTO articles
+              (id, category, title, title_en, summary, summary_en, content, content_en, image, author, date, views)
+            VALUES
+              ('$id','$category','$title','$title_en','$summary','$summary_en','$content','$content_en','$image','$author','$date', 0)";
+
+    if ($conn->query($sql)) {
+        echo json_encode(array('ok' => true, 'id' => $id));
+    } else {
+        echo json_encode(array('ok' => false, 'error' => $conn->error));
+    }
     exit;
 }
 
-// UPDATE article
+// -------------------------------------------------------
+// UPDATE an existing article
+// -------------------------------------------------------
 if ($action === 'update') {
     $data = json_decode(file_get_contents('php://input'), true);
-    $id         = $conn->real_escape_string($data['id']);
-    $category   = $conn->real_escape_string($data['category']   ?? 'general');
-    $title      = $conn->real_escape_string($data['title']      ?? '');
-    $title_en   = $conn->real_escape_string($data['titleEn']    ?? $title);
-    $summary    = $conn->real_escape_string($data['summary']    ?? '');
-    $summary_en = $conn->real_escape_string($data['summaryEn']  ?? $summary);
-    $content    = $conn->real_escape_string($data['content']    ?? '');
-    $content_en = $conn->real_escape_string($data['contentEn']  ?? $content);
-    $image      = $conn->real_escape_string($data['image']      ?? '');
-    $author     = $conn->real_escape_string($data['author']     ?? '');
 
-    $sql = "UPDATE articles SET category='$category',title='$title',title_en='$title_en',
-            summary='$summary',summary_en='$summary_en',content='$content',content_en='$content_en',
-            image='$image',author='$author' WHERE id='$id'";
-    echo $conn->query($sql) ? json_encode(['ok' => true]) : json_encode(['ok' => false, 'error' => $conn->error]);
+    $id         = $conn->real_escape_string($data['id']);
+    $category   = isset($data['category'])  ? $conn->real_escape_string($data['category'])  : 'general';
+    $title      = isset($data['title'])     ? $conn->real_escape_string($data['title'])      : '';
+    $title_en   = isset($data['titleEn'])   ? $conn->real_escape_string($data['titleEn'])   : $title;
+    $summary    = isset($data['summary'])   ? $conn->real_escape_string($data['summary'])   : '';
+    $summary_en = isset($data['summaryEn']) ? $conn->real_escape_string($data['summaryEn']) : $summary;
+    $content    = isset($data['content'])   ? $conn->real_escape_string($data['content'])   : '';
+    $content_en = isset($data['contentEn']) ? $conn->real_escape_string($data['contentEn']) : $content;
+    $image      = isset($data['image'])     ? $conn->real_escape_string($data['image'])     : '';
+    $author     = isset($data['author'])    ? $conn->real_escape_string($data['author'])    : '';
+
+    $sql = "UPDATE articles
+            SET category='$category', title='$title', title_en='$title_en',
+                summary='$summary', summary_en='$summary_en',
+                content='$content', content_en='$content_en',
+                image='$image', author='$author'
+            WHERE id='$id'";
+
+    if ($conn->query($sql)) {
+        echo json_encode(array('ok' => true));
+    } else {
+        echo json_encode(array('ok' => false, 'error' => $conn->error));
+    }
     exit;
 }
 
-// DELETE article
+// -------------------------------------------------------
+// DELETE an article (also deletes its comments)
+// -------------------------------------------------------
 if ($action === 'delete') {
     $id = $conn->real_escape_string($_GET['id']);
 
-    // BUG FIX #1: Delete related comments first to avoid orphaned records in the database
+    // Delete related comments first so no orphan records remain
     $conn->query("DELETE FROM comments WHERE article_id='$id'");
 
     // Now delete the article itself
     $conn->query("DELETE FROM articles WHERE id='$id'");
-    echo json_encode(['ok' => true]);
+
+    echo json_encode(array('ok' => true));
     exit;
 }
 
-// INCREMENT views
+// -------------------------------------------------------
+// INCREMENT VIEWS — count one more view for this article
+// Only counts once per browser session (not every page load)
+// -------------------------------------------------------
 if ($action === 'increment_views') {
     $id = $conn->real_escape_string($_GET['id']);
 
-    // BUG FIX #4: Only increment views once per session using a session flag
     session_start();
-    $sessionKey = 'viewed_' . $id;
+    $sessionKey = 'viewed_' . $id; // unique key per article
+
     if (empty($_SESSION[$sessionKey])) {
+        // Not viewed yet this session — add one view
         $conn->query("UPDATE articles SET views = views + 1 WHERE id='$id'");
-        $_SESSION[$sessionKey] = true; // mark as viewed for this session
+        $_SESSION[$sessionKey] = true; // mark as viewed
     }
-    echo json_encode(['ok' => true]);
+
+    echo json_encode(array('ok' => true));
     exit;
 }
 
-// TOGGLE stop/show
+// -------------------------------------------------------
+// TOGGLE STOP — hide or show an article on the homepage
+// -------------------------------------------------------
 if ($action === 'toggle_stop') {
     $id = $conn->real_escape_string($_GET['id']);
     $conn->query("UPDATE articles SET is_stopped = NOT is_stopped WHERE id='$id'");
-    echo json_encode(['ok' => true]);
+    echo json_encode(array('ok' => true));
     exit;
 }
 
-echo json_encode(['ok' => false, 'error' => 'Unknown action']);
+// If no action matched, return an error
+echo json_encode(array('ok' => false, 'error' => 'Unknown action'));
 
-function fmt($row) {
-    return [
+// -------------------------------------------------------
+// formatArticle - Converts a database row into a clean array
+// that matches what the JavaScript frontend expects
+// -------------------------------------------------------
+function formatArticle($row) {
+    return array(
         'id'        => $row['id'],
         'category'  => $row['category'],
         'title'     => $row['title'],
@@ -131,8 +187,8 @@ function fmt($row) {
         'image'     => $row['image'],
         'author'    => $row['author'],
         'date'      => $row['date'],
-        'views'     => (int)($row['views'] ?? 0), // BUG FIX #9: safe cast — avoids NaN if DB returns null
+        'views'     => (int)($row['views']),  // cast to number (never null)
         'isStopped' => (bool)$row['is_stopped'],
-    ];
+    );
 }
 ?>
