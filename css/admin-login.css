@@ -1,4 +1,4 @@
-/* admin-login.css */
+/** admin-login.css **/
 .admin-card { border-top: 4px solid var(--red); }
 .admin-login-badge {
   display: inline-block;
