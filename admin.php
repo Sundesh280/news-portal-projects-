@@ -1,7 +1,6 @@
 <?php
 session_name('nk_admin');
 session_start();
-// Block non-admins from accessing this page directly
 if (empty($_SESSION['user_id']) || $_SESSION['user_role'] !== 'admin') {
   header('Location: php/admin-login.php');
   exit;
