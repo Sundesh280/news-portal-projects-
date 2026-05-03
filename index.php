@@ -12,7 +12,6 @@
   <link rel="stylesheet" href="css/article.css" />
 </head>
 <body>
-
   <!-- TOP UTILITY BAR -->
   <div class="top-bar">
     <span class="top-bar-date" id="topBarDate"></span>
