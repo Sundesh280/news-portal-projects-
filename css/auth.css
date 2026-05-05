@@ -1,0 +1,107 @@
+/* auth.css */
+.auth-page {
+  background: var(--bg);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+.auth-main {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+}
+.auth-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 40px;
+  width: 100%;
+  max-width: 420px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+}
+.auth-title {
+  font-family: var(--font-serif);
+  font-size: 1.8rem;
+  font-weight: 900;
+  margin-bottom: 6px;
+}
+.auth-subtitle {
+  font-family: var(--font-ui);
+  font-size: 0.88rem;
+  color: var(--muted);
+  margin-bottom: 28px;
+}
+.form-group {
+  margin-bottom: 18px;
+}
+.form-group label {
+  display: block;
+  font-family: var(--font-ui);
+  font-size: 0.82rem;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: #333;
+}
+.form-group input {
+  width: 100%;
+  border: 1.5px solid var(--border);
+  border-radius: 6px;
+  padding: 10px 14px;
+  font-family: var(--font-ui);
+  font-size: 0.92rem;
+  transition: border-color 0.15s;
+}
+.form-group input:focus {
+  outline: none;
+  border-color: var(--red);
+}
+.pass-wrap {
+  position: relative;
+}
+.pass-wrap input {
+  padding-right: 44px;
+}
+.toggle-pass {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  color: var(--muted);
+}
+.btn-auth-submit {
+  width: 100%;
+  background: var(--red);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 13px;
+  font-family: var(--font-ui);
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: background 0.15s;
+}
+.btn-auth-submit:hover {
+  background: var(--red-dark);
+}
+.auth-alt-link {
+  font-family: var(--font-ui);
+  font-size: 0.82rem;
+  color: var(--muted);
+  margin-top: 16px;
+  text-align: center;
+}
+.back-to-user-login {
+  font-family: var(--font-ui);
+  font-size: 0.82rem;
+  color: var(--muted);
+  margin-top: 20px;
+  text-align: center;
+}
