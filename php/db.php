@@ -3,22 +3,25 @@
 // This file connects to the MySQL database.
 // Include this file in any PHP file that needs the database.
 
-$host   = 'localhost';   // MySQL server address
-$user   = 'root';        // MySQL username
-$pass   = 'S@n1desh';   // MySQL password
+$host   = 'localhost';    // MySQL server address
+$user   = 'root';         // MySQL username
+$pass   = '';             // MySQL password (empty by default in XAMPP)
 $dbname = 'nepal_khabar'; // Database name
 
-// Create a connection to the database
-$conn = new mysqli($host, $user, $pass, $dbname);
-
-// If connection failed, stop and show an error message
-if ($conn->connect_error) {
+// PHP 8.1+ throws exceptions by default on mysqli errors.
+// We must catch them to return proper JSON to the frontend instead of crashing.
+try {
+    // Create a connection to the database
+    $conn = new mysqli($host, $user, $pass, $dbname);
+    
+    // Set character encoding to support Nepali and other Unicode text
+    $conn->set_charset('utf8mb4');
+} catch (mysqli_sql_exception $e) {
+    http_response_code(500);
+    header('Content-Type: application/json; charset=utf-8');
     die(json_encode([
         'ok'    => false,
-        'error' => 'DB connection failed: ' . $conn->connect_error
+        'error' => 'Database connection failed: ' . $e->getMessage()
     ]));
 }
-
-// Set character encoding to support Nepali and other Unicode text
-$conn->set_charset('utf8mb4');
 ?>
