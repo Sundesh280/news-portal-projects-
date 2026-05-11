@@ -3,7 +3,7 @@ session_name('nk_user');
 session_start();
 // If already logged in, redirect to home
 if (!empty($_SESSION['user_id'])) {
-    header('Location: index.php');
+    header('Location: ../index.php');
     exit;
 }
 ?>
@@ -17,14 +17,14 @@ if (!empty($_SESSION['user_id'])) {
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Source+Serif+4:wght@300;400;600&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/style.css" />
-  <link rel="stylesheet" href="css/auth.css" />
+  <link rel="stylesheet" href="../css/style.css" />
+  <link rel="stylesheet" href="../css/auth.css" />
 </head>
 <body class="auth-page">
 
   <header class="site-header">
     <div class="header-inner">
-      <a href="index.php" class="site-logo">Nepal<span>Khabar</span></a>
+      <a href="../index.php" class="site-logo">Nepal<span>Khabar</span></a>
       <div class="header-actions">
         <a href="login.php" class="btn-header btn-header-outline">Sign In</a>
       </div>
@@ -64,7 +64,7 @@ if (!empty($_SESSION['user_id'])) {
       <div id="registerMsg" class="form-msg"></div>
 
       <p class="auth-alt-link">Already have an account? <a href="login.php">Sign in</a></p>
-      <p class="auth-alt-link" style="margin-top:8px;"><a href="index.php">← Back to News</a></p>
+      <p class="auth-alt-link" style="margin-top:8px;"><a href="../index.php">← Back to News</a></p>
     </div>
   </main>
 
@@ -72,7 +72,9 @@ if (!empty($_SESSION['user_id'])) {
     <p>© 2026 <strong>Nepal Khabar</strong> · नेपाल खबर</p>
   </footer>
 
-  <script src="js/data.js"></script>
-  <script src="js/register.js"></script>
+  <!-- Set base path so data.js finds php/users.php correctly -->
+  <script>window.__NK_BASE = '';</script>
+  <script src="../js/data.js"></script>
+  <script src="../js/register.js"></script>
 </body>
 </html>

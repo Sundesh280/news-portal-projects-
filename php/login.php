@@ -3,7 +3,7 @@ session_name('nk_user');
 session_start();
 // If already logged in as a regular user, redirect to home
 if (!empty($_SESSION['user_id']) && $_SESSION['user_role'] !== 'admin') {
-    header('Location: index.php');
+    header('Location: ../index.php');
     exit;
 }
 ?>
@@ -17,13 +17,13 @@ if (!empty($_SESSION['user_id']) && $_SESSION['user_role'] !== 'admin') {
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Source+Serif+4:wght@300;400;600&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/style.css" />
-  <link rel="stylesheet" href="css/auth.css" />
+  <link rel="stylesheet" href="../css/style.css" />
+  <link rel="stylesheet" href="../css/auth.css" />
 </head>
 <body class="auth-page">
   <header class="site-header">
     <div class="header-inner">
-      <a href="index.php" class="site-logo">Nepal<span>Khabar</span></a>
+      <a href="../index.php" class="site-logo">Nepal<span>Khabar</span></a>
       <div class="header-actions">
         <a href="register.php" class="btn-header btn-header-red">Register</a>
       </div>
@@ -47,13 +47,16 @@ if (!empty($_SESSION['user_id']) && $_SESSION['user_role'] !== 'admin') {
       <button class="btn-auth-submit" id="loginSubmit">Sign In</button>
       <div id="loginMsg" class="form-msg"></div>
       <p class="auth-alt-link">Don't have an account? <a href="register.php">Register here</a></p>
-      <p class="auth-alt-link" style="margin-top:8px;"><a href="index.php">← Back to News</a></p>
+      <p class="auth-alt-link" style="margin-top:8px;"><a href="../index.php">← Back to News</a></p>
     </div>
   </main>
   <footer class="site-footer">
     <p>© 2026 <strong>Nepal Khabar</strong> · नेपाल खबर</p>
   </footer>
-  <script src="js/data.js"></script>
-  <script src="js/login.js"></script>
+  <!-- Set base path to empty so data.js finds php/users.php correctly -->
+  <!-- Without this, data.js would look for php/php/users.php (wrong!) -->
+  <script>window.__NK_BASE = '';</script>
+  <script src="../js/data.js"></script>
+  <script src="../js/login.js"></script>
 </body>
 </html>
