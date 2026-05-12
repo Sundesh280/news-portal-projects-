@@ -1,14 +1,11 @@
 /* data.js - Nepal Khabar (PHP + MySQL backend)
    This file handles all communication between the browser and the server.
    DB is an object that holds all the functions we need to get/save data.
-
-   Security: Every state-changing POST request includes the CSRF token from
-   the hidden #csrf_token element that PHP renders into each page.
-   The server (users.php) validates this token on every POST action.
 */
 
-
 var DB = {
+
+  // ---- Setup & Helpers ----
 
   // ------------------------------------------------------------------
   // _base - Returns the folder path where PHP files are located
@@ -23,32 +20,15 @@ var DB = {
   },
 
   // ------------------------------------------------------------------
-  // _csrfToken - Read the current CSRF token from the hidden field PHP
-  // renders into each authenticated page, or from the in-memory cache
-  // that is populated after a successful login / session check.
-  // ------------------------------------------------------------------
-  _csrfToken: function () {
-    // In-memory cache wins (set after login returns a fresh token)
-    if (this._cachedCsrfToken) {
-      return this._cachedCsrfToken;
-    }
-    // Fall back to the hidden field PHP embedded in the current page
-    var el = document.getElementById("csrf_token");
-    return el ? el.value : "";
-  },
-
-  // In-memory CSRF token cache — updated after login and session checks
-  _cachedCsrfToken: "",
-
-
-  // ------------------------------------------------------------------
   // _get - Sends a GET request to a PHP file and returns the response
   // file   = name of the PHP file (without .php), e.g. "articles"
   // params = query string, e.g. "action=get_all"
   // ------------------------------------------------------------------
   _get: function (file, params) {
     var xhr = new XMLHttpRequest();
-    xhr.open("GET", this._base() + file + ".php?" + params, false); // false = wait for response
+    // Add timestamp to prevent browser from caching the response
+    var url = this._base() + file + ".php?" + params + "&_t=" + Date.now();
+    xhr.open("GET", url, false); // false = wait for response
     xhr.send();
     try {
       return JSON.parse(xhr.responseText); // convert JSON text to an object
@@ -62,17 +42,11 @@ var DB = {
   // file   = name of the PHP file (without .php), e.g. "users"
   // params = query string
   // body   = JavaScript object to send as JSON (the data payload)
-  //
-  // Security: The X-CSRF-Token header carries the token from the hidden
-  // #csrf_token field.  The PHP csrf_verify() function checks this header
-  // (and also $_POST['csrf_token'] and the JSON body field as fallbacks).
   // ------------------------------------------------------------------
   _post: function (file, params, body) {
     var xhr = new XMLHttpRequest();
     xhr.open("POST", this._base() + file + ".php?" + params, false);
     xhr.setRequestHeader("Content-Type", "application/json");
-    // Attach the CSRF token as a custom header on every POST request
-    xhr.setRequestHeader("X-CSRF-Token", this._csrfToken());
     xhr.send(JSON.stringify(body || {})); // convert object to JSON text before sending
     try {
       return JSON.parse(xhr.responseText);
@@ -81,8 +55,7 @@ var DB = {
     }
   },
 
-
-  // ==================== ARTICLES ====================
+  // ---- Articles ----
 
   // Get all articles from the server
   getArticles: function () {
@@ -91,6 +64,15 @@ var DB = {
       return response.articles;
     }
     return []; // return empty list if something went wrong
+  },
+
+  // Get the ID of the newest article on the server
+  getLatestArticleId: function () {
+    var response = this._get("articles", "action=get_latest_id");
+    if (response && response.ok) {
+      return response.latest_id;
+    }
+    return null;
   },
 
   // Get one article by its ID
@@ -138,7 +120,7 @@ var DB = {
     this._get("articles", "action=toggle_stop&id=" + encodeURIComponent(id));
   },
 
-  // ==================== USERS ====================
+  // ---- Users ----
 
   // Get all users (admin use only)
   getUsers: function () {
@@ -170,13 +152,6 @@ var DB = {
     if (response && response.ok) {
       // Save session to browser storage so we don't have to re-check every page load
       sessionStorage.setItem("nk__session", JSON.stringify(response.user));
-      // Cache the fresh CSRF token the server issued after login
-      if (response.csrf_token) {
-        this._cachedCsrfToken = response.csrf_token;
-        // Also update the hidden field so form-based flows stay in sync
-        var el = document.getElementById("csrf_token");
-        if (el) { el.value = response.csrf_token; }
-      }
       return { ok: true, user: response.user };
     }
     var errorMsg = "Login failed.";
@@ -185,7 +160,6 @@ var DB = {
     }
     return { ok: false, error: errorMsg };
   },
-
 
   // Log out the current user
   logout: function () {
@@ -214,12 +188,6 @@ var DB = {
     var response = this._get("users", "action=get_session");
     if (response && response.ok && response.user) {
       sessionStorage.setItem("nk__session", JSON.stringify(response.user));
-      // Sync the CSRF token the server sent back
-      if (response.csrf_token) {
-        this._cachedCsrfToken = response.csrf_token;
-        var el = document.getElementById("csrf_token");
-        if (el) { el.value = response.csrf_token; }
-      }
       return response.user;
     }
     return null; // no one is logged in
@@ -240,17 +208,10 @@ var DB = {
     var response = this._get("users", "action=get_admin_session");
     if (response && response.ok && response.user) {
       sessionStorage.setItem("nk__admin_session", JSON.stringify(response.user));
-      // Sync CSRF token
-      if (response.csrf_token) {
-        this._cachedCsrfToken = response.csrf_token;
-        var el = document.getElementById("csrf_token");
-        if (el) { el.value = response.csrf_token; }
-      }
       return response.user;
     }
     return null;
   },
-
 
   // Delete a user by ID (admin use)
   deleteUser: function (id) {
@@ -260,7 +221,7 @@ var DB = {
   // Empty function kept for compatibility (no longer needed)
   saveUsers: function () {},
 
-  // ==================== COMMENTS ====================
+  // ---- Comments ----
 
   // Get all comments for a specific article
   getComments: function (articleId) {

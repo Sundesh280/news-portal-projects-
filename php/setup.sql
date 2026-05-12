@@ -1,16 +1,4 @@
--- ============================================================
--- setup.sql — Nepal Khabar Database Setup
--- ============================================================
--- Run this file once to create the database, all tables,
--- and seed initial data.
---
--- Security notes:
---  • All user passwords are stored as bcrypt hashes (never plain text).
---  • The admin seed below uses a pre-hashed password.
---    Replace the hash with your own via PHP:
---      echo password_hash('YourAdminPassword', PASSWORD_BCRYPT, ['cost' => 12]);
---  • VARCHAR(60) UUIDs use random_bytes() in PHP — unpredictable and unique.
--- ============================================================
+
 
 CREATE DATABASE IF NOT EXISTS nepal_khabar
     CHARACTER SET utf8mb4
@@ -19,10 +7,6 @@ CREATE DATABASE IF NOT EXISTS nepal_khabar
 USE nepal_khabar;
 
 
--- ============================================================
--- TABLE: users
--- Stores registered user accounts (both regular users and admins).
--- ============================================================
 CREATE TABLE IF NOT EXISTS users (
     id          VARCHAR(60)  NOT NULL,
     name        VARCHAR(150) NOT NULL,
@@ -37,10 +21,6 @@ CREATE TABLE IF NOT EXISTS users (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
--- ============================================================
--- TABLE: articles
--- Stores bilingual (Nepali + English) news articles.
--- ============================================================
 CREATE TABLE IF NOT EXISTS articles (
     id          VARCHAR(60)  NOT NULL,
     category    VARCHAR(50)  NOT NULL DEFAULT 'general',
@@ -63,11 +43,6 @@ CREATE TABLE IF NOT EXISTS articles (
     INDEX idx_articles_is_stopped (is_stopped)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-
--- ============================================================
--- TABLE: comments
--- User comments on articles. Cascades on article delete.
--- ============================================================
 CREATE TABLE IF NOT EXISTS comments (
     id          VARCHAR(60)  NOT NULL,
     article_id  VARCHAR(60)  NOT NULL,
@@ -86,10 +61,6 @@ CREATE TABLE IF NOT EXISTS comments (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
--- ============================================================
--- TABLE: subscribers
--- People who subscribed for news updates.
--- ============================================================
 CREATE TABLE IF NOT EXISTS subscribers (
     id          VARCHAR(60)  NOT NULL,
     first_name  VARCHAR(100) NOT NULL,
@@ -104,10 +75,6 @@ CREATE TABLE IF NOT EXISTS subscribers (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
--- ============================================================
--- TABLE: submissions
--- Public news tips submitted by subscribers.
--- ============================================================
 CREATE TABLE IF NOT EXISTS submissions (
     id                   VARCHAR(60)  NOT NULL,
     subscriber_id        VARCHAR(60),
@@ -135,13 +102,10 @@ CREATE TABLE IF NOT EXISTS submissions (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
--- ============================================================
--- TABLE: ticker_headlines
--- Breaking news ticker entries shown at the top of the site.
--- ============================================================
 CREATE TABLE IF NOT EXISTS ticker_headlines (
     id          VARCHAR(60)  NOT NULL,
     text_body   TEXT         NOT NULL,
+    text_np     TEXT,
     is_active   TINYINT(1)   NOT NULL DEFAULT 1,
     all_stopped TINYINT(1)   NOT NULL DEFAULT 0,
     created_at  TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -151,20 +115,19 @@ CREATE TABLE IF NOT EXISTS ticker_headlines (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
--- ============================================================
--- SEED DATA — Ticker Headlines
--- ============================================================
-INSERT IGNORE INTO ticker_headlines (id, text_body, is_active) VALUES
-('th-001', 'Nepal cricket team defeats India by 7 wickets in Asia Cup Qualifier', 1),
-('th-002', 'Nepal Rastra Bank cuts interest rate to 5.0% — industries welcome move', 1),
-('th-003', '5.2 magnitude earthquake tremors felt in Kathmandu Valley, no casualties reported', 1),
-('th-004', 'Nepal Telecom launches 5G service in Kathmandu Valley', 1),
-('th-005', 'Dengue fever cases rising in Terai districts — Health Ministry issues alert', 1);
+-- CREATE DEFAULT ADMIN USER
+-- Email: admin@nepalkhabar.com
+-- Password: admin123
+INSERT IGNORE INTO users (id, name, email, password, role, joined_at) VALUES
+('admin-001', 'System Administrator', 'admin@nepalkhabar.com', '$2y$10$BreIwlLE6cMCNjdeHoJ4uee05hQaX9w.8ChuEzs4Z0gGUqLx97acu', 'admin', NOW());
 
+INSERT IGNORE INTO ticker_headlines (id, text_body, text_np, is_active) VALUES
+('th-001', 'Nepal cricket team defeats India by 7 wickets in Asia Cup Qualifier', 'नेपाल क्रिकेट टोलीले एसिया कप क्वालिफायरमा भारतलाई ७ विकेटले पराजित गर्यो', 1),
+('th-002', 'Nepal Rastra Bank cuts interest rate to 5.0% — industries welcome move', 'नेपाल राष्ट्र बैंकले ब्याज दर ५.०% मा घटायो — उद्योगहरूले स्वागत गरे', 1),
+('th-003', '5.2 magnitude earthquake tremors felt in Kathmandu Valley, no casualties reported', 'काठमाडौं उपत्यकामा ५.२ म्याग्निच्युडको भूकम्पको कम्पन महसुस', 1),
+('th-004', 'Nepal Telecom launches 5G service in Kathmandu Valley', 'नेपाल टेलिकमले काठमाडौं उपत्यकामा ५जी सेवा सुरु गर्‍यो', 1),
+('th-005', 'Dengue fever cases rising in Terai districts — Health Ministry issues alert', 'तराई जिल्लामा डेंगु ज्वरोका बिरामी बढ्दै — स्वास्थ्य मन्त्रालयले सतर्कता जारी गर्‍यो', 1);
 
--- ============================================================
--- SEED DATA — Sample Articles
--- ============================================================
 INSERT IGNORE INTO articles
     (id, category, title, title_en, summary, summary_en, content, content_en, image, author, date, views)
 VALUES
@@ -237,27 +200,3 @@ VALUES
  'The Nepali film "Premgatha" has won the prestigious Best Foreign Film award at the Seoul International Film Festival, marking a new chapter for Nepali cinema globally.',
  'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=800&q=80',
  'Entertainment Desk', CURDATE(), 430);
-
-
--- ============================================================
--- SEED DATA — Default Admin Account
--- ──────────────────────────────────
--- ⚠ IMPORTANT: Replace the password hash below before deploying!
---
--- To generate your own hash, run in PHP (CLI or a temp script):
---   php -r "echo password_hash('YourSecurePassword!', PASSWORD_BCRYPT, ['cost' => 12]);"
---
--- The hash below corresponds to the placeholder password:
---   Admin@Nepal2026!
--- Change it immediately after first login.
--- ============================================================
-INSERT IGNORE INTO users (id, name, email, password, role) VALUES (
-    'admin-nk-001',
-    'Nepal Khabar Admin',
-    'admin@nepalkhabar.com',
-    -- bcrypt hash of 'Admin@Nepal2026!' (cost=12), generated by XAMPP PHP
-    -- ⚠ Replace this with YOUR OWN generated hash before production deployment!
-    -- To regenerate:  C:\xampp\php\php.exe -r "echo password_hash('YourPass', PASSWORD_BCRYPT, ['cost'=>12]);"
-    '$2y$12$nuqC8o6bj2OFndlT4C2t2ehbFceXDg/Owc/w/P0uyk5AgzZG6wEAi',
-    'admin'
-);

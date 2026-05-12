@@ -18,20 +18,23 @@ function openArticle(id) {
   updateHeaderAuth();
 
   // Fill in article details on the page
-  document.getElementById("artCategory").textContent = art.category;
+  var articleView = document.getElementById("articleView");
+  if (articleView) {
+    articleView.dataset.currentArticleId = id;
+  }
+
+  document.getElementById("artCategory").textContent = getCategoryLabel(art.category);
   document.getElementById("artCategory").className   = "cat-badge cat-" + art.category;
 
-  document.getElementById("artTitleEn").textContent  = art.titleEn  || art.title   || "";
-  document.getElementById("artTitle").textContent    = art.title    || "";
-  document.getElementById("artSummaryEn").textContent = art.summaryEn || art.summary || "";
+  document.getElementById("artTitle").textContent = getArticleTitle(art);
+  document.getElementById("artSummary").textContent = getArticleSummary(art);
   document.getElementById("artAuthor").textContent   = art.author   || "";
   document.getElementById("artDate").textContent     = art.date     || "";
-  document.getElementById("artViews").textContent    = (art.views   || 0) + " views";
+  document.getElementById("artViews").textContent    = (art.views   || 0) + " " + getItemLabel("views", "दर्शन");
   document.getElementById("artImage").src            = art.image    || "";
 
   // Build the article body
-  // First try contentEn, then content, then fall back to summary
-  var rawText = art.contentEn || art.content || art.summaryEn || art.summary || "";
+  var rawText = getArticleBody(art);
 
   // If the API stored the "paid plan" error in our database, swap it for the summary
   if (rawText.toUpperCase().indexOf("ONLY AVAILABLE IN PAID PLANS") !== -1) {
@@ -220,7 +223,7 @@ function loadComments(artId) {
 
   // No comments yet
   if (comments.length === 0) {
-    commentList.innerHTML = '<p style="color:#aaa;font-size:0.88rem;">No comments yet.</p>';
+    commentList.innerHTML = '<p style="color:#aaa;font-size:0.88rem;">' + escHtml(getItemLabel('No comments yet.', 'अझ टिप्पणी छैन।')) + '</p>';
     return;
   }
 
@@ -241,8 +244,8 @@ function loadComments(artId) {
     var actionsHtml = "";
     if (isOwner) {
       actionsHtml = '<div class="comment-actions">'
-        + '<button class="btn-edit-comment" onclick="editCommentUI(\'' + artId + "', '" + c.id + '\')">Edit</button> '
-        + '<button class="btn-delete-comment" onclick="deleteCommentUI(\'' + artId + "', '" + c.id + '\')">Delete</button>'
+        + '<button class="btn-edit-comment" onclick="editCommentUI(\'' + artId + "', '" + c.id + '")">' + escHtml(getItemLabel('Edit', 'सम्पादन')) + '</button> '
+        + '<button class="btn-delete-comment" onclick="deleteCommentUI(\'' + artId + "', '" + c.id + '")">' + escHtml(getItemLabel('Delete', 'मेटाउनुहोस्')) + '</button>'
         + '</div>';
     }
 
@@ -266,7 +269,7 @@ window.editCommentUI = function (artId, commentId) {
   if (!textEl) return;
 
   var currentText = textEl.textContent;
-  var newText = prompt("Edit your comment:", currentText);
+  var newText = prompt(getItemLabel('Edit your comment:', 'आफ्नो टिप्पणी सम्पादन गर्नुहोस्:'), currentText);
 
   // Only save if user typed something and clicked OK
   if (newText !== null && newText.trim() !== "") {
@@ -274,7 +277,7 @@ window.editCommentUI = function (artId, commentId) {
     if (result.ok) {
       loadComments(artId); // reload comments to show update
     } else {
-      alert(result.error || "Failed to edit comment");
+      alert(result.error || getItemLabel('Failed to edit comment', 'टिप्पणी सम्पादन गर्न असफल भयो'));
     }
   }
 };
@@ -283,7 +286,7 @@ window.editCommentUI = function (artId, commentId) {
 // deleteCommentUI - Asks for confirmation then deletes a comment
 // ------------------------------------------------------------------
 window.deleteCommentUI = function (artId, commentId) {
-  var confirmed = confirm("Are you sure you want to delete this comment?");
+  var confirmed = confirm(getItemLabel('Are you sure you want to delete this comment?', 'के तपाईं यस टिप्पणी सचमुच मेटाउन चाहनुहुन्छ?'));
   if (confirmed) {
     DB.deleteComment(commentId);
     loadComments(artId); // reload comments to remove deleted one

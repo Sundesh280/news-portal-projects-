@@ -1,4 +1,5 @@
 <?php
+
 header('Content-Type: application/json; charset=utf-8');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST');
@@ -21,6 +22,16 @@ if ($action === 'get_all') {
     }
 
     echo json_encode(array('ok' => true, 'articles' => $articles));
+    exit;
+}
+
+// -------------------------------------------------------
+// GET LATEST article ID (for real-time polling)
+// -------------------------------------------------------
+if ($action === 'get_latest_id') {
+    $result = $conn->query("SELECT id FROM articles ORDER BY created_at DESC LIMIT 1");
+    $row    = $result->fetch_assoc();
+    echo json_encode(array('ok' => true, 'latest_id' => ($row ? $row['id'] : null)));
     exit;
 }
 

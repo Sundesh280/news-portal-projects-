@@ -3,6 +3,7 @@
 // This takes a news URL and tries to extract the full paragraphs
 // to give you "big articles" for your portal.
 
+// ---- Input & Validation ----
 header('Content-Type: application/json; charset=utf-8');
 
 $url = isset($_POST['url']) ? $_POST['url'] : '';
@@ -12,17 +13,16 @@ if (!$url) {
     exit;
 }
 
+// ---- Web Fetcher ----
+// We use cURL to act like a normal web browser (like Chrome)
+// If we don't do this, news websites will block us thinking we are a bot.
 $ch = curl_init();
 curl_setopt($ch, CURLOPT_URL, $url);
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-curl_setopt($ch, CURLOPT_TIMEOUT, 15);
-curl_setopt($ch, CURLOPT_USERAGENT, "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36");
-curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-    "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
-    "Accept-Language: en-US,en;q=0.5"
-));
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);    // Give us the website text back
+curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);    // Follow the link if the website redirects
+curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);   // Ignore security warnings
+curl_setopt($ch, CURLOPT_TIMEOUT, 15);             // Give up after 15 seconds
+curl_setopt($ch, CURLOPT_USERAGENT, "Mozilla/5.0"); // Pretend to be a normal browser
 
 $html = curl_exec($ch);
 curl_close($ch);
@@ -33,6 +33,7 @@ if (!$html) {
     exit;
 }
 
+// ---- Text Extraction ----
 // 2. Extract paragraphs and large div text
 // We look for <p> tags but also <div> tags that might contain the story
 preg_match_all('/<(p|div)[^>]*>(.*?)<\/\1>/is', $html, $matches);
@@ -61,6 +62,19 @@ if (isset($matches[2]) && is_array($matches[2])) {
         $periodCount = substr_count($paragraph, '.');
         if ($wordCount > 10 && $periodCount == 0) {
             continue; // This is a menu list, not an article
+        }
+
+        // --- NEW: CSS & CODE BLOCK FILTER ---
+        // KILL SWITCH: If it contains curly braces or CSS-like selectors, skip it
+        if (strpos($paragraph, '{') !== false || strpos($paragraph, '}') !== false || strpos($paragraph, ';') !== false) {
+            continue; // This is definitely code or style junk
+        }
+
+        if (preg_match('/[#.;>:]/i', $paragraph)) {
+            // CSS usually has lots of special chars and few periods
+            if ($periodCount < 2) {
+                continue;
+            }
         }
 
         // 4. Skip if it contains too many Navigation Keywords

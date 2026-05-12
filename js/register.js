@@ -6,6 +6,64 @@ var regEmailEl = null;
 var regPassEl  = null;
 var regPass2El = null;
 
+function translateRegisterPage() {
+  var titleEl = document.querySelector('.auth-title');
+  var subtitleEl = document.querySelector('.auth-subtitle');
+  var labelName = document.querySelector('label[for="regName"]');
+  var labelEmail = document.querySelector('label[for="regEmail"]');
+  var labelPass = document.querySelector('label[for="regPassword"]');
+  var labelPass2 = document.querySelector('label[for="regPassword2"]');
+  var submitBtn = document.getElementById('registerSubmit');
+  var altLink = document.querySelector('.auth-alt-link');
+  var backLink = document.querySelector('.auth-alt-link + .auth-alt-link a');
+
+  if (titleEl) {
+    titleEl.textContent = getItemLabel('Create Account', 'खाता सिर्जना गर्नुहोस्');
+  }
+  if (subtitleEl) {
+    subtitleEl.textContent = getItemLabel('Join Nepal Khabar to comment and engage', 'टिप्पणी गर्न र सहभागिता जनाउन नेपाल खबरमा सामेल हुनुहोस्');
+  }
+  if (labelName) {
+    labelName.textContent = getItemLabel('Full Name', 'पूरा नाम');
+  }
+  if (labelEmail) {
+    labelEmail.textContent = getItemLabel('Email Address', 'इमेल ठेगाना');
+  }
+  if (labelPass) {
+    labelPass.textContent = getItemLabel('Password', 'पासवर्ड');
+  }
+  if (labelPass2) {
+    labelPass2.textContent = getItemLabel('Confirm Password', 'पासवर्ड पुष्टि गर्नुहोस्');
+  }
+  if (regNameEl) {
+    regNameEl.placeholder = getItemLabel('Your name', 'तपाईंको नाम');
+  }
+  if (regEmailEl) {
+    regEmailEl.placeholder = getItemLabel('you@example.com', 'तपाईं@उदाहरण.com');
+  }
+  if (regPassEl) {
+    regPassEl.placeholder = getItemLabel('At least 6 characters', 'कम्तिमा 6 वर्ण');
+  }
+  if (regPass2El) {
+    regPass2El.placeholder = getItemLabel('Repeat your password', 'आफ्नो पासवर्ड दोहोरो गर्नुहोस्');
+  }
+  if (submitBtn) {
+    submitBtn.textContent = getItemLabel('Create Account', 'खाता सिर्जना गर्नुहोस्');
+  }
+  if (altLink) {
+    altLink.innerHTML = getItemLabel(
+      'Already have an account? <a href="login.php">Sign in</a>',
+      'पहिले नै खाता छ? <a href="login.php">लगइन गर्नुहोस्</a>'
+    );
+  }
+  if (backLink) {
+    backLink.textContent = getItemLabel('← Back to News', '← समाचारमा फर्कनुहोस्');
+  }
+  document.title = getItemLabel('Register — Nepal Khabar', 'दर्ता — नेपाल खबर');
+}
+
+var onLanguageChanged = translateRegisterPage;
+
 // Runs when the registration page is fully loaded
 document.addEventListener("DOMContentLoaded", function () {
 
@@ -20,6 +78,8 @@ document.addEventListener("DOMContentLoaded", function () {
   regEmailEl = document.getElementById("regEmail");
   regPassEl  = document.getElementById("regPassword");
   regPass2El = document.getElementById("regPassword2");
+
+  translateRegisterPage();
 
   var submitBtn = document.getElementById("registerSubmit");
   if (submitBtn) {
@@ -50,26 +110,26 @@ function doRegister() {
 
   // All fields must be filled
   if (!name || !email || !password || !pass2) {
-    showMsg(regMsgEl, "Please fill in all fields.", "error");
+    showMsg(regMsgEl, getItemLabel('Please fill in all fields.', 'कृपया सबै फिल्ड भर्नुहोस्।'), "error");
     return;
   }
 
   // Both passwords must match
   if (password !== pass2) {
-    showMsg(regMsgEl, "Passwords do not match.", "error");
+    showMsg(regMsgEl, getItemLabel('Passwords do not match.', 'पासवर्डहरू मिलेन।'), "error");
     return;
   }
 
   // Password must be at least 6 characters
   if (password.length < 6) {
-    showMsg(regMsgEl, "Password must be at least 6 characters.", "error");
+    showMsg(regMsgEl, getItemLabel('Password must be at least 6 characters.', 'पासवर्ड कम्तिमा ६ वर्णको हुनुपर्छ।'), "error");
     return;
   }
 
   // Basic email format check (must contain @ and a dot after it)
   var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!emailRegex.test(email)) {
-    showMsg(regMsgEl, "Please enter a valid email address.", "error");
+    showMsg(regMsgEl, getItemLabel('Please enter a valid email address.', 'कृपया मान्य इमेल ठेगाना प्रविष्ट गर्नुहोस्।'), "error");
     return;
   }
 
@@ -82,7 +142,7 @@ function doRegister() {
 
   // Auto-login after registration and go to home
   DB.loginUser(email, password);
-  showMsg(regMsgEl, "Account created!", "success");
+  showMsg(regMsgEl, getItemLabel('Account created!', 'खाता सिर्जना भयो!'), "success");
   setTimeout(function () {
     window.location.href = "../index.php"; // go up from php/ folder to root
   }, 1000);

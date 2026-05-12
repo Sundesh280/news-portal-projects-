@@ -8,6 +8,13 @@ header('Access-Control-Allow-Headers: Content-Type');
 
 require 'db.php';
 
+// Ensure ticker headline translation support exists in the current database.
+// If the text_np column is missing, add it automatically.
+$result = $conn->query("SHOW COLUMNS FROM ticker_headlines LIKE 'text_np'");
+if ($result && $result->num_rows === 0) {
+    $conn->query("ALTER TABLE ticker_headlines ADD COLUMN text_np TEXT");
+}
+
 $action = isset($_GET['action']) ? $_GET['action'] : '';
 
 // -------------------------------------------------------
@@ -123,6 +130,7 @@ function formatHeadline($row) {
     return array(
         'id'         => $row['id'],
         'text'       => $row['text_body'],
+        'textNp'     => array_key_exists('text_np', $row) ? $row['text_np'] : null,
         'active'     => (bool)$row['is_active'],
         'allStopped' => (bool)$row['all_stopped'],
     );

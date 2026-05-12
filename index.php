@@ -12,10 +12,12 @@
   <link rel="stylesheet" href="css/article.css" />
 </head>
 <body>
+
   <!-- TOP UTILITY BAR -->
   <div class="top-bar">
     <span class="top-bar-date" id="topBarDate"></span>
     <div class="top-bar-links">
+      <button type="button" id="langToggleBtn" class="top-bar-lang-btn">ने/En</button>
       <a href="php/login.php"    id="topBarLogin">🔐 Login</a>
       <a href="php/register.php" id="topBarRegister">📝 Register</a>
       <span id="topBarUserInfo" style="display:none; color:#ccc;">
@@ -38,7 +40,7 @@
     <div class="header-inner">
       <div>
         <div class="site-logo" id="logoHome" style="cursor:pointer;">Nepal<span>Khabar</span></div>
-        <div class="header-tagline">नेपालको विश्वसनीय समाचार स्रोत</div>
+        <div class="header-tagline" id="siteTagline">नेपालको विश्वसनीय समाचार स्रोत</div>
       </div>
       </div>
     </div>
@@ -59,16 +61,16 @@
     </div>
     <div class="page-layout">
       <main>
-        <div class="section-heading" id="sectionHeading">📰 Top Stories</div>
+        <div class="section-heading" id="sectionHeading">📰 Top Stories <span class="live-dot-mini"></span><span style="font-size:0.7rem; color:#888; font-weight:500; vertical-align:middle; margin-left:4px;">LIVE</span></div>
         <div id="newsGrid"></div>
       </main>
       <aside class="sidebar">
         <div class="sidebar-widget">
-          <div class="sidebar-widget-title">🔥 Most Read</div>
+          <div class="sidebar-widget-title" id="mostReadTitle">🔥 Most Read</div>
           <div class="sidebar-article-list" id="mostReadList"></div>
         </div>
         <div class="sidebar-widget sidebar-widget-latest">
-          <div class="sidebar-widget-title">🕐 Latest</div>
+          <div class="sidebar-widget-title" id="latestTitle">🕐 Latest</div>
           <div class="sidebar-article-list" id="latestList"></div>
         </div>
       </aside>
@@ -83,9 +85,8 @@
         <div class="article-wrap">
           <span id="artCategory" class="cat-badge"></span>
           <div class="article-header">
-            <h1 class="article-title-en" id="artTitleEn"></h1>
-            <p class="article-title-np"  id="artTitle"></p>
-            <p class="article-summary"   id="artSummaryEn"></p>
+            <h1 class="article-title" id="artTitle"></h1>
+            <p class="article-summary" id="artSummary"></p>
           </div>
           <div class="article-meta-bar">
             <span>✍ <strong id="artAuthor"></strong></span>
@@ -94,7 +95,7 @@
           </div>
           <!-- Social Share Bar -->
           <div class="share-bar">
-            <span class="share-label">Share:</span>
+            <span class="share-label" id="shareLabel">Share:</span>
             <a class="share-btn share-facebook" id="shareFacebook" href="#" target="_blank" rel="noopener" title="Share on Facebook">
               <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047V9.41c0-3.025 1.792-4.697 4.533-4.697 1.312 0 2.686.235 2.686.235v2.97h-1.514c-1.491 0-1.956.93-1.956 1.886v2.269h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073z"/></svg>
             </a>
@@ -113,16 +114,16 @@
 
         <!-- COMMENTS -->
         <div class="comments-section">
-          <h2 class="comments-title">Comments</h2>
+          <h2 class="comments-title" id="commentsTitle">Comments</h2>
           <div id="commentList"></div>
           <div class="comment-form" id="commentForm" style="display:none;">
-            <p class="comment-form-title">Leave a Comment</p>
+            <p class="comment-form-title" id="commentFormTitle">Leave a Comment</p>
             <textarea id="commentText" placeholder="Write your comment here…"></textarea>
             <button class="btn-post-comment" id="commentSubmit">Post Comment</button>
             <div id="commentMsg" class="form-msg"></div>
           </div>
           <div class="comment-locked" id="commentLocked" style="display:none;">
-            🔒 You must <a href="php/login.php">sign in</a> or <a href="php/register.php">register</a> to leave a comment.
+            🔒 <span id="commentLockedText">You must</span> <a href="php/login.php" id="commentLockedLogin">sign in</a> <span id="commentLockedOr">or</span> <a href="php/register.php" id="commentLockedRegister">register</a> <span id="commentLockedEnd">to leave a comment.</span>
           </div>
         </div>
       </div>
@@ -133,9 +134,9 @@
   <footer class="site-footer">
     <p>© 2026 <strong>Nepal Khabar</strong> · नेपाल खबर · All rights reserved</p>
     <p style="margin-top:8px;">
-      <a href="index.php">Home</a> &nbsp;·&nbsp;
-      <a href="php/login.php">Login</a> &nbsp;·&nbsp;
-      <a href="php/register.php">Register</a>
+      <a href="index.php" id="footerHome">Home</a> &nbsp;·&nbsp;
+      <a href="php/login.php" id="footerLogin">Login</a> &nbsp;·&nbsp;
+      <a href="php/register.php" id="footerRegister">Register</a>
     </p>
   </footer>
 

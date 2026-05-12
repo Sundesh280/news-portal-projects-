@@ -150,6 +150,7 @@ a:hover {
   color: var(--red);
 }
 
+/* ---- Header Text ---- */
 .header-tagline {
   font-family: var(--font-ui);
   font-size: 0.75rem;
@@ -216,6 +217,7 @@ a:hover {
   font-weight: 600;
 }
 
+/* ---- Site Search ---- */
 /* Site search (header) */
 .site-search {
   display: flex;
@@ -743,4 +745,32 @@ a:hover {
   background: #fee2e2;
   color: #991b1b;
   display: block;
+}
+
+/* ── Live Indicator ────────────────────────────────── */
+.live-dot-mini {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background: #c0392b;
+  border-radius: 50%;
+  margin-left: 8px;
+  vertical-align: middle;
+  animation: live-pulse 1.5s infinite;
+  box-shadow: 0 0 0 0 rgba(192, 57, 43, 0.7);
+}
+
+@keyframes live-pulse {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(192, 57, 43, 0.7);
+  }
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 6px rgba(192, 57, 43, 0);
+  }
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(192, 57, 43, 0);
+  }
 }

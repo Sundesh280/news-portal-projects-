@@ -23,8 +23,54 @@ document.addEventListener("DOMContentLoaded", function () {
   setupArticleForm();
   setupSidebarNav();
   initTickerManager();
-  showSection("sectionArticles");
+  showSection("sectionArticles");                   
+  startAdminArticlePoll();
+  startTickerPoll();
 });
+
+// ------------------------------------------------------------------
+// ADMIN LOGOUT
+// ------------------------------------------------------------------
+function doAdminLogout() {
+  // Call the admin logout action on the server to destroy the PHP session
+  DB.adminLogout();
+  
+  // Redirect to home page
+  window.location.href = 'index.php';
+}
+
+// ------------------------------------------------------------------
+// REAL TIME ARTICLE POLLING (ADMIN)
+// ------------------------------------------------------------------
+var lastKnownAdminArtId = null;
+function startAdminArticlePoll() {
+  lastKnownAdminArtId = DB.getLatestArticleId();
+  
+  // Check every 4 seconds
+  setInterval(function() {
+    // Only refresh if we are in the Articles section and NOT currently editing/rewriting
+    var sec = document.getElementById("sectionArticles");
+    if (sec && sec.style.display !== "none" && !editingId && !rewriteMode) {
+      var newId = DB.getLatestArticleId();
+      if (newId && newId !== lastKnownAdminArtId) {
+        lastKnownAdminArtId = newId;
+        renderAdminArticles(adminCurrentCat);
+      }
+    }
+  }, 3000);
+}
+
+function startTickerPoll() {
+  setInterval(function() {
+    var sec = document.getElementById("sectionTicker");
+    if (sec && sec.style.display !== "none") {
+      _tickerCache = null; // force reload from server
+      renderTickerMasterControl();
+      renderTickerPreview();
+      renderTickerHeadlines();
+    }
+  }, 10000);
+}
 
 // ---- SIDEBAR NAV ----
 function setupSidebarNav() {
@@ -827,11 +873,11 @@ function publishLiveArticle(index) {
     
     var articleData = {
       titleEn:   a.title,
-      title:     a.title,
+      title:     "", // Leave blank for manual Nepali translation
       summaryEn: a.summary,
-      summary:   a.summary,
+      summary:   "", // Leave blank
       contentEn: finalContent,
-      content:   finalContent,
+      content:   "", // Leave blank
       image:     a.image,
       author:    a.author || "NewsData.io",
       category:  a.category
@@ -847,6 +893,8 @@ function publishLiveArticle(index) {
         btn.style.background = "#95a5a6";
         btn.disabled = true;
       }
+      // Refresh the list immediately so the admin sees the new article
+      renderAdminArticles(adminCurrentCat);
     } else {
       if (btn) {
         btn.textContent = "Failed - try again";

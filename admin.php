@@ -1,6 +1,7 @@
 <?php
 session_name('nk_admin');
 session_start();
+// Block non-admins from accessing this page directly
 if (empty($_SESSION['user_id']) || $_SESSION['user_role'] !== 'admin') {
   header('Location: php/admin-login.php');
   exit;
@@ -31,7 +32,7 @@ if (empty($_SESSION['user_id']) || $_SESSION['user_role'] !== 'admin') {
     <div class="admin-user-info">
       <span>Logged in as <strong><?php echo htmlspecialchars($_SESSION['user_name']); ?></strong></span>
       <a href="index.php?from=admin" class="btn-admin-logout" style="margin-right:4px;">← View Site</a>
-      <a href="php/logout.php" class="btn-admin-logout" onclick="sessionStorage.removeItem('nk__admin_session');">Logout</a>
+      <a href="javascript:void(0);" class="btn-admin-logout" onclick="doAdminLogout();">Logout</a>
     </div>
   </header>
 
@@ -90,6 +91,7 @@ if (empty($_SESSION['user_id']) || $_SESSION['user_role'] !== 'admin') {
 
       <!-- ══ Articles Section ═══════════════════════════ -->
       <div class="admin-section" id="sectionArticles">
+        <h2 class="section-title">📰 Manage Articles <span style="font-size:0.75rem;color:#27ae60;font-family:'DM Sans',sans-serif;font-weight:500;margin-left:10px;">🔴 Live Updates</span></h2>
         <div class="article-form-card" id="articleForm">
           <div class="form-mode-badge" id="formModeBadge">✏️ New Article</div>
           <div class="form-grid">
@@ -165,7 +167,7 @@ if (empty($_SESSION['user_id']) || $_SESSION['user_role'] !== 'admin') {
       <!-- ====== LIVE NEWS SECTION ====== -->
       <!-- Admin fetches real news from newsdata.io and decides what to publish -->
       <div class="admin-section" id="sectionLiveNews">
-        <h2 class="section-title">🌐 Live News from API</h2>
+        <h2 class="section-title">🌐 Live News from API <span style="font-size:0.75rem;color:#c0392b;font-family:'DM Sans',sans-serif;font-weight:500;margin-left:10px;">🔴 Fetch & Publish</span></h2>
 
         <!-- Category selector -->
         <div style="margin-bottom:18px;">

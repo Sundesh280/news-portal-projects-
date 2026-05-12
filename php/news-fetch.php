@@ -1,5 +1,5 @@
 <?php
-
+// ---- Setup ----
 
 header('Content-Type: application/json; charset=utf-8');
 
@@ -30,6 +30,7 @@ if ($cat === 'general') {
 
 $allArticles = array();
 
+// ---- Fetch Logic ----
 if ($cat === 'general') {
     // TOP STORIES: Try to get news from Kathmandu Post first
     $url1     = 'https://newsdata.io/api/1/latest?apikey=' . $API_KEY . '&q=Kathmandu+Post&language=en';
@@ -56,7 +57,26 @@ if ($cat === 'general') {
     $intlNews  = fetchFromApi($url2);
 
     // Combine them
-    $allArticles = array_merge($nepalNews, $intlNews);
+    $rawList = array_merge($nepalNews, $intlNews);
+
+    // STRONGER LOGIC: Remove duplicates by Link AND Title
+    $allArticles = array();
+    $seenLinks   = array();
+    $seenTitles  = array();
+
+    foreach ($rawList as $item) {
+        $link  = isset($item['link']) ? $item['link'] : '';
+        $title = isset($item['title']) ? strtolower(trim($item['title'])) : '';
+
+        // If we've seen this link OR this title before, SKIP it
+        if (!$title || in_array($link, $seenLinks) || in_array($title, $seenTitles)) {
+            continue;
+        }
+
+        $seenLinks[]   = $link;
+        $seenTitles[]  = $title;
+        $allArticles[] = $item;
+    }
 }
 
 // -------------------------------------------------------
@@ -122,7 +142,7 @@ function cleanText($text) {
 
 echo json_encode(array('ok' => true, 'articles' => $articles, 'category' => $cat));
 
-
+// ---- API Helper ----
 function fetchFromApi($url) {
     $response = file_get_contents($url);
     if ($response === false) {
