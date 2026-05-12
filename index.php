@@ -1,4 +1,4 @@
-<?php session_name('nk_user'); session_start(); ?>
+<?php session_name('nk_user'); session_set_cookie_params(['path' => '/']); session_start(); ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
