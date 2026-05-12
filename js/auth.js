@@ -38,6 +38,7 @@ function updateHeaderAuth() {
   // Logout button — log out and go to home page
   if (logoutBtn) {
     logoutBtn.addEventListener("click", function () {
+      if (!confirm("Do you want to log out?")) return;
       DB.logout();
       window.location.href = "index.php";
     });
