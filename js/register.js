@@ -60,6 +60,13 @@ function doRegister() {
     return;
   }
 
+  // Username must contain only letters and spaces (no numbers or special characters)
+  var nameRegex = /^[A-Za-z\s]+$/;
+  if (!nameRegex.test(name)) {
+    showMsg(regMsgEl, "Username must contain only letters (no numbers or special characters).", "error");
+    return;
+  }
+
   // Password must be at least 6 characters
   if (password.length < 6) {
     showMsg(regMsgEl, "Password must be at least 6 characters.", "error");
@@ -70,6 +77,22 @@ function doRegister() {
   var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!emailRegex.test(email)) {
     showMsg(regMsgEl, "Please enter a valid email address.", "error");
+    return;
+  }
+
+  // Email local part (before @) must not be all digits — must contain at least one letter
+  var localPart = email.split("@")[0];
+  if (/^\d+$/.test(localPart)) {
+    showMsg(regMsgEl, "Email address cannot have only numbers before @. Include at least one letter.", "error");
+    return;
+  }
+
+  // Ask user for confirmation before registering — show their details
+  var confirmMsg = "Do you really want to create an account?\n\n"
+                 + "Name: " + name + "\n"
+                 + "Email: " + email + "\n\n"
+                 + "Click OK to confirm.";
+  if (!confirm(confirmMsg)) {
     return;
   }
 
