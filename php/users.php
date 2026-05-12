@@ -45,7 +45,9 @@ if ($action === 'login') {
     } else {
         session_name('nk_user');
     }
+    session_set_cookie_params(['path' => '/']);
     session_start();
+    session_regenerate_id(true);
 
     // Save user info in the session
     $_SESSION['user_id']    = $user['id'];
@@ -81,9 +83,22 @@ if ($action === 'register') {
         exit;
     }
 
+    // Username must contain only letters and spaces (no numbers or special characters)
+    if (!preg_match('/^[A-Za-z\s]+$/', $name)) {
+        echo json_encode(array('ok' => false, 'error' => 'Username must contain only letters (no numbers or special characters).'));
+        exit;
+    }
+
     // Password must be at least 6 characters
     if (strlen($password) < 6) {
         echo json_encode(array('ok' => false, 'error' => 'Password must be at least 6 characters.'));
+        exit;
+    }
+
+    // Email local part (before @) must not be all digits
+    $localPart = explode('@', $email)[0];
+    if (preg_match('/^\d+$/', $localPart)) {
+        echo json_encode(array('ok' => false, 'error' => 'Email address cannot have only numbers before @. Include at least one letter.'));
         exit;
     }
 
