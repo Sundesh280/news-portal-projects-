@@ -139,6 +139,7 @@ document.addEventListener("DOMContentLoaded", function () {
   if (logoutBtn) {
     logoutBtn.addEventListener("click", function (e) {
       e.preventDefault();
+      if (!confirm("Do you want to log out?")) return;
       DB.logout();
       updateAuthUI(); // Update UI without refresh
     });
