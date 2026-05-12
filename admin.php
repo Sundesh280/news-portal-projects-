@@ -1,5 +1,6 @@
 <?php
 session_name('nk_admin');
+session_set_cookie_params(['path' => '/']);
 session_start();
 // Block non-admins from accessing this page directly
 if (empty($_SESSION['user_id']) || $_SESSION['user_role'] !== 'admin') {
@@ -32,7 +33,7 @@ if (empty($_SESSION['user_id']) || $_SESSION['user_role'] !== 'admin') {
     <div class="admin-user-info">
       <span>Logged in as <strong><?php echo htmlspecialchars($_SESSION['user_name']); ?></strong></span>
       <a href="index.php?from=admin" class="btn-admin-logout" style="margin-right:4px;">← View Site</a>
-      <a href="php/logout.php" class="btn-admin-logout" onclick="sessionStorage.removeItem('nk__admin_session');">Logout</a>
+      <a href="php/admin-logout.php" class="btn-admin-logout" onclick="if(!confirm('Do you want to log out?')){event.preventDefault();return false;}sessionStorage.removeItem('nk__admin_session');">Logout</a>
     </div>
   </header>
 
@@ -119,9 +120,33 @@ if (empty($_SESSION['user_id']) || $_SESSION['user_role'] !== 'admin') {
               <label>पूर्ण लेख (नेपाली)</label>
               <textarea id="formContent" placeholder="नेपालीमा पूर्ण लेख यहाँ लेख्नुहोस्।"></textarea>
             </div>
-            <div class="form-field">
-              <label>Image URL</label>
-              <input type="url" id="formImage" placeholder="https://images.unsplash.com/…" />
+            <div class="form-field full-width">
+              <label>Article Image</label>
+              <div class="image-source-tabs">
+                <button type="button" class="img-tab active" id="imgTabUrl" onclick="switchImageTab('url')">🔗 Paste URL</button>
+                <button type="button" class="img-tab" id="imgTabUpload" onclick="switchImageTab('upload')">📁 Upload from Device</button>
+              </div>
+              <div id="imgUrlPanel" class="img-panel">
+                <input type="url" id="formImage" placeholder="https://images.unsplash.com/…" />
+              </div>
+              <div id="imgUploadPanel" class="img-panel" style="display:none;">
+                <div class="upload-drop-zone" id="uploadDropZone">
+                  <input type="file" id="formImageFile" accept="image/jpeg,image/png,image/gif,image/webp" style="display:none;" />
+                  <div class="upload-drop-content" id="uploadDropContent">
+                    <span class="upload-icon">📷</span>
+                    <p>Drag & drop an image here or <button type="button" class="upload-browse-btn" onclick="document.getElementById('formImageFile').click()">Browse Files</button></p>
+                    <small>JPEG, PNG, GIF, WebP · Max 5MB</small>
+                  </div>
+                  <div class="upload-progress" id="uploadProgress" style="display:none;">
+                    <div class="upload-progress-bar" id="uploadProgressBar"></div>
+                    <span id="uploadProgressText">Uploading...</span>
+                  </div>
+                </div>
+              </div>
+              <div class="image-preview-wrap" id="imagePreviewWrap" style="display:none;">
+                <img id="imagePreview" src="" alt="Preview" />
+                <button type="button" class="btn-remove-preview" onclick="removeImagePreview()" title="Remove image">✕</button>
+              </div>
             </div>
             <div class="form-field">
               <label>Author Name *</label>
