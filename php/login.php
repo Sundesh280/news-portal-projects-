@@ -1,5 +1,6 @@
 <?php
 session_name('nk_user');
+session_set_cookie_params(['path' => '/']);
 session_start();
 // If already logged in as a regular user, redirect to home
 if (!empty($_SESSION['user_id']) && $_SESSION['user_role'] !== 'admin') {
@@ -53,8 +54,6 @@ if (!empty($_SESSION['user_id']) && $_SESSION['user_role'] !== 'admin') {
   <footer class="site-footer">
     <p>© 2026 <strong>Nepal Khabar</strong> · नेपाल खबर</p>
   </footer>
-  <!-- Set base path to empty so data.js finds php/users.php correctly -->
-  <!-- Without this, data.js would look for php/php/users.php (wrong!) -->
   <script>window.__NK_BASE = '';</script>
   <script src="../js/data.js"></script>
   <script src="../js/login.js"></script>

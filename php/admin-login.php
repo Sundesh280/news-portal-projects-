@@ -1,5 +1,6 @@
 <?php
 session_name('nk_admin');
+session_set_cookie_params(['path' => '/']);
 session_start();
 // If already logged in as admin, go directly to admin panel
 if (!empty($_SESSION['user_id']) && $_SESSION['user_role'] === 'admin') {

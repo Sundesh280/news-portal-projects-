@@ -14,6 +14,19 @@ require 'db.php';
 
 $action = isset($_GET['action']) ? $_GET['action'] : '';
 
+// Helper function to filter bad words
+function filterBadWords($text) {
+    // Array of common bad words to filter
+    $badWords = array('sala', 'shit', 'bitch',  'cunt', 'bastard',  'slut', 'whore','retard', 'idiot', 'stupid', 'dumbass', 'crap', 'bullshit');
+    
+    foreach ($badWords as $word) {
+        $replacement = str_repeat('*', strlen($word));
+        // Use regex \b for word boundary to avoid censoring parts of normal words
+        $text = preg_replace('/\b' . preg_quote($word, '/') . '\b/i', $replacement, $text);
+    }
+    return $text;
+}
+
 // -------------------------------------------------------
 // GET comments for one article
 // -------------------------------------------------------
@@ -83,7 +96,9 @@ if ($action === 'add') {
 
     $data       = json_decode(file_get_contents('php://input'), true);
     $article_id = $conn->real_escape_string(isset($data['articleId']) ? $data['articleId'] : '');
-    $text       = $conn->real_escape_string(trim(isset($data['text']) ? $data['text'] : ''));
+    $raw_text   = trim(isset($data['text']) ? $data['text'] : '');
+    $filtered_text = filterBadWords($raw_text);
+    $text       = $conn->real_escape_string($filtered_text);
     $user_id    = $conn->real_escape_string($_SESSION['user_id']);
     $name       = $conn->real_escape_string($_SESSION['user_name']);
     $date       = date('d/m/Y, H:i:s'); // current date and time
@@ -126,7 +141,9 @@ if ($action === 'edit') {
 
     $data    = json_decode(file_get_contents('php://input'), true);
     $id      = $conn->real_escape_string(isset($data['id'])   ? $data['id']   : '');
-    $text    = $conn->real_escape_string(trim(isset($data['text']) ? $data['text'] : ''));
+    $raw_text = trim(isset($data['text']) ? $data['text'] : '');
+    $filtered_text = filterBadWords($raw_text);
+    $text    = $conn->real_escape_string($filtered_text);
     $user_id = $_SESSION['user_id'];
     $role    = $_SESSION['user_role'];
 
