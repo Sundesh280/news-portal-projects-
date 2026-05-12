@@ -1,18 +1,18 @@
 /* admin.js - Admin Panel */
 
 // List of all categories
-var CATS = ["general","business","technology","science","health","sports","entertainment"];
+var CATS = ["general", "business", "technology", "science", "health", "sports", "entertainment"];
 
 // Display names for each category
 var CAT_LABELS_ADMIN = {
-  general:"Top Stories", business:"Business", technology:"Technology",
-  science:"Science", health:"Health", sports:"Sports", entertainment:"Entertainment"
+  general: "Top Stories", business: "Business", technology: "Technology",
+  science: "Science", health: "Health", sports: "Sports", entertainment: "Entertainment"
 };
 
-var adminCurrentCat  = "general"; // currently selected category tab
-var editingId        = null;      // ID of article being edited (null = adding new)
-var rewriteMode      = false;     // true when rewriting an article
-var _tickerCache     = null;      // cached ticker headlines from server
+var adminCurrentCat = "general"; // currently selected category tab
+var editingId = null;      // ID of article being edited (null = adding new)
+var rewriteMode = false;     // true when rewriting an article
+var _tickerCache = null;      // cached ticker headlines from server
 var _allStoppedCache = false;     // cached global ticker stopped state
 
 // ---- Page Load ----
@@ -34,9 +34,9 @@ document.addEventListener("DOMContentLoaded", function () {
 var lastKnownAdminArtId = null;
 function startAdminArticlePoll() {
   lastKnownAdminArtId = DB.getLatestArticleId();
-  
+
   // Check every 4 seconds
-  setInterval(function() {
+  setInterval(function () {
     // Only refresh if we are in the Articles section and NOT currently editing/rewriting
     var sec = document.getElementById("sectionArticles");
     if (sec && sec.style.display !== "none" && !editingId && !rewriteMode) {
@@ -50,7 +50,7 @@ function startAdminArticlePoll() {
 }
 
 function startTickerPoll() {
-  setInterval(function() {
+  setInterval(function () {
     var sec = document.getElementById("sectionTicker");
     if (sec && sec.style.display !== "none") {
       _tickerCache = null; // force reload from server
@@ -113,7 +113,7 @@ function buildAdminNav() {
   for (var i = 0; i < CATS.length; i++) {
     var cat = CATS[i];
     var btn = document.createElement("button");
-    btn.className   = "nav-btn" + (cat === adminCurrentCat ? " active" : "");
+    btn.className = "nav-btn" + (cat === adminCurrentCat ? " active" : "");
     btn.dataset.cat = cat;
     btn.textContent = CAT_LABELS_ADMIN[cat];
     btn.addEventListener("click", makeNavHandler(cat, btn));
@@ -136,7 +136,7 @@ function makeNavHandler(cat, btn) {
 // ---- TICKER ----
 function loadTickerData() {
   var r = DB.getTickerHeadlines();
-  _tickerCache     = r.headlines;
+  _tickerCache = r.headlines;
   _allStoppedCache = r.allStopped;
 }
 function getTickerHeadlines() {
@@ -153,8 +153,8 @@ function initTickerManager() {
   renderTickerPreview();
   renderTickerHeadlines();
 
-  var addBtn  = document.getElementById("tickerAddBtn");
-  var addInp  = document.getElementById("tickerNewText");
+  var addBtn = document.getElementById("tickerAddBtn");
+  var addInp = document.getElementById("tickerNewText");
   var masterBtn = document.getElementById("tickerMasterBtn");
 
   if (addBtn) addBtn.addEventListener("click", addTickerHeadline);
@@ -176,14 +176,14 @@ function initTickerManager() {
 
 function renderTickerMasterControl() {
   var stopped = isTickerAllStopped();
-  var dot     = document.getElementById("tickerLiveDot");
-  var label   = document.getElementById("tickerMasterLabel");
-  var btn     = document.getElementById("tickerMasterBtn");
-  if (dot)   dot.className    = "ticker-live-dot" + (stopped ? " stopped" : "");
+  var dot = document.getElementById("tickerLiveDot");
+  var label = document.getElementById("tickerMasterLabel");
+  var btn = document.getElementById("tickerMasterBtn");
+  if (dot) dot.className = "ticker-live-dot" + (stopped ? " stopped" : "");
   if (label) label.textContent = stopped ? "Ticker: Stopped" : "Ticker: Live";
   if (btn) {
     btn.textContent = stopped ? "▶ Start All" : "⏸ Stop All";
-    btn.className   = "btn-ticker-master" + (stopped ? " all-stopped" : "");
+    btn.className = "btn-ticker-master" + (stopped ? " all-stopped" : "");
   }
 }
 
@@ -191,25 +191,25 @@ function renderTickerPreview() {
   var track = document.getElementById("tickerPreviewTrack");
   if (!track) return;
   var allStopped = isTickerAllStopped();
-  var headlines  = getTickerHeadlines();
+  var headlines = getTickerHeadlines();
   var active = [];
   for (var i = 0; i < headlines.length; i++) {
     if (headlines[i].active && !allStopped) active.push(headlines[i].text);
   }
   if (active.length === 0) {
     track.textContent = "— No active headlines —";
-    track.className   = "ticker-preview-track paused";
+    track.className = "ticker-preview-track paused";
     return;
   }
   track.textContent = active.join("   ◆   ");
-  track.className   = "ticker-preview-track";
+  track.className = "ticker-preview-track";
 }
 
 function renderTickerHeadlines() {
-  var list      = document.getElementById("tickerHeadlineList");
-  var countEl   = document.getElementById("tickerCount");
+  var list = document.getElementById("tickerHeadlineList");
+  var countEl = document.getElementById("tickerCount");
   var headlines = getTickerHeadlines();
-  var allStop   = isTickerAllStopped();
+  var allStop = isTickerAllStopped();
   if (countEl) countEl.textContent = headlines.length;
   if (!list) return;
   if (headlines.length === 0) {
@@ -218,7 +218,7 @@ function renderTickerHeadlines() {
   }
   list.innerHTML = "";
   for (var i = 0; i < headlines.length; i++) {
-    var h   = headlines[i];
+    var h = headlines[i];
     var eff = allStop || !h.active; // effective: is it stopped?
     var row = document.createElement("div");
     row.className = "ticker-headline-row" + (eff ? " is-stopped" : "");
@@ -239,7 +239,7 @@ function renderTickerHeadlines() {
 }
 
 function addTickerHeadline() {
-  var inp  = document.getElementById("tickerNewText");
+  var inp = document.getElementById("tickerNewText");
   var text = inp ? inp.value.trim() : "";
   if (!text) { showMsg("tickerAddMsg", "Please enter a headline.", "error"); return; }
   DB.addTickerHeadline(text);
@@ -294,14 +294,14 @@ function tickerRewrite(id) {
     inp.focus();
     inp.select();
     inp.addEventListener("keydown", function (e) {
-      if (e.key === "Enter")  tickerSaveRewrite(id);
+      if (e.key === "Enter") tickerSaveRewrite(id);
       if (e.key === "Escape") tickerCancelRewrite(id);
     });
   }
 }
 
 function tickerSaveRewrite(id) {
-  var inp  = document.getElementById("trewrite-inp-" + id);
+  var inp = document.getElementById("trewrite-inp-" + id);
   var text = inp ? inp.value.trim() : "";
   if (!text) return;
   DB.rewriteTickerHeadline(id, text);
@@ -311,9 +311,9 @@ function tickerSaveRewrite(id) {
 }
 
 function tickerCancelRewrite(id) {
-  var row  = document.getElementById("trow-" + id);
+  var row = document.getElementById("trow-" + id);
   var rrow = document.getElementById("trewrite-" + id);
-  if (row)  row.classList.remove("is-rewriting");
+  if (row) row.classList.remove("is-rewriting");
   if (rrow) rrow.remove();
 }
 
@@ -329,7 +329,7 @@ function renderAdminArticles(cat) {
   var list = document.getElementById("adminArticleList");
   if (!list) return;
 
-  var all      = DB.getArticles();
+  var all = DB.getArticles();
   var filtered = [];
   for (var i = 0; i < all.length; i++) {
     if (cat === "general" || all[i].category === cat) {
@@ -342,10 +342,10 @@ function renderAdminArticles(cat) {
     return;
   }
 
-  var html     = "";
+  var html = "";
   var fallback = "css/img-fallback.png";
   for (var j = 0; j < filtered.length; j++) {
-    var art     = filtered[j];
+    var art = filtered[j];
     var stopped = art.isStopped;
     html += '<div class="admin-art-row' + (stopped ? " stopped-article" : "") + '">'
       + '<img src="' + art.image + '" alt="" onerror="this.src=\'' + fallback + '\'" />'
@@ -384,19 +384,19 @@ function setupArticleForm() {
   if (catSel) {
     for (var i = 0; i < CATS.length; i++) {
       var opt = document.createElement("option");
-      opt.value       = CATS[i];
+      opt.value = CATS[i];
       opt.textContent = CAT_LABELS_ADMIN[CATS[i]];
       catSel.appendChild(opt);
     }
   }
 
-  var saveBtn   = document.getElementById("saveArticleBtn");
+  var saveBtn = document.getElementById("saveArticleBtn");
   var cancelBtn = document.getElementById("cancelEditBtn");
 
   if (saveBtn) saveBtn.addEventListener("click", saveArticle);
   if (cancelBtn) {
     cancelBtn.addEventListener("click", function () {
-      editingId   = null;
+      editingId = null;
       rewriteMode = false;
       clearForm();
       resetFormUI();
@@ -405,14 +405,14 @@ function setupArticleForm() {
 }
 
 function saveArticle() {
-  var titleEn   = val("formTitleEn");
-  var titleNp   = val("formTitle");
+  var titleEn = val("formTitleEn");
+  var titleNp = val("formTitle");
   var summaryEn = val("formSummaryEn");
   var summaryNp = val("formSummary");
   var contentEn = val("formContentEn");
   var contentNp = val("formContent");
-  var author    = val("formAuthor");
-  var category  = val("formCategory");
+  var author = val("formAuthor");
+  var category = val("formCategory");
 
   // Validate required fields
   if (!titleEn && !titleNp) { showMsg("formMsg", "Please enter a title.", "error"); return; }
@@ -421,21 +421,21 @@ function saveArticle() {
   if (!author || !category) { showMsg("formMsg", "Author and Category are required.", "error"); return; }
 
   var data = {
-    titleEn:   titleEn   || titleNp,
-    title:     titleNp   || titleEn,
+    titleEn: titleEn || titleNp,
+    title: titleNp || titleEn,
     summaryEn: summaryEn || summaryNp,
-    summary:   summaryNp || summaryEn,
+    summary: summaryNp || summaryEn,
     contentEn: contentEn || contentNp,
-    content:   contentNp || contentEn,
-    image:     val("formImage"),
-    author:    author,
-    category:  category
+    content: contentNp || contentEn,
+    image: val("formImage"),
+    author: author,
+    category: category
   };
 
   if (editingId) {
     DB.updateArticle(editingId, data);
     showMsg("formMsg", rewriteMode ? "Rewritten!" : "Updated!", "success");
-    editingId   = null;
+    editingId = null;
     rewriteMode = false;
   } else {
     DB.addArticle(data);
@@ -451,7 +451,7 @@ function resetFormUI() {
   var sb = document.getElementById("saveArticleBtn");
   var cb = document.getElementById("cancelEditBtn");
   var bd = document.getElementById("formModeBadge");
-  if (sb) sb.textContent   = "Publish Article";
+  if (sb) sb.textContent = "Publish Article";
   if (cb) cb.style.display = "none";
   if (bd) { bd.textContent = "✏️ New Article"; bd.className = "form-mode-badge"; }
 }
@@ -463,8 +463,8 @@ function startEdit(id) {
   showSection("sectionArticles");
   fillForm(a);
   editingId = id;
-  document.getElementById("saveArticleBtn").textContent      = "Update Article";
-  document.getElementById("cancelEditBtn").style.display     = "inline-block";
+  document.getElementById("saveArticleBtn").textContent = "Update Article";
+  document.getElementById("cancelEditBtn").style.display = "inline-block";
   var bd = document.getElementById("formModeBadge");
   if (bd) { bd.textContent = "✏️ Editing Article"; bd.className = "form-mode-badge edit-mode"; }
   document.getElementById("articleForm").scrollIntoView({ behavior: "smooth" });
@@ -477,8 +477,8 @@ function startRewrite(id) {
   showSection("sectionArticles");
   fillForm(a);
   editingId = id;
-  document.getElementById("saveArticleBtn").textContent      = "Save Rewrite";
-  document.getElementById("cancelEditBtn").style.display     = "inline-block";
+  document.getElementById("saveArticleBtn").textContent = "Save Rewrite";
+  document.getElementById("cancelEditBtn").style.display = "inline-block";
   var bd = document.getElementById("formModeBadge");
   if (bd) { bd.textContent = "🔄 Rewriting Article"; bd.className = "form-mode-badge rewrite-mode"; }
   var c = document.getElementById("formContentEn");
@@ -487,23 +487,40 @@ function startRewrite(id) {
 }
 
 function fillForm(a) {
-  setVal("formTitleEn",   a.titleEn   || "");
-  setVal("formTitle",     a.title     || "");
+  setVal("formTitleEn", a.titleEn || "");
+  setVal("formTitle", a.title || "");
   setVal("formSummaryEn", a.summaryEn || "");
-  setVal("formSummary",   a.summary   || "");
+  setVal("formSummary", a.summary || "");
   setVal("formContentEn", a.contentEn || "");
-  setVal("formContent",   a.content   || "");
-  setVal("formImage",     a.image     || "");
-  setVal("formAuthor",    a.author    || "");
-  setVal("formCategory",  a.category  || "general");
+  setVal("formContent", a.content || "");
+  setVal("formImage", a.image || "");
+  setVal("formAuthor", a.author || "");
+  setVal("formCategory", a.category || "general");
+
+  // Show image preview if article has an image
+  if (a.image) {
+    showImagePreview(a.image);
+    // If it's a local upload, switch to upload tab; otherwise URL tab
+    if (a.image.indexOf("uploads/") === 0) {
+      switchImageTab("upload");
+    } else {
+      switchImageTab("url");
+    }
+  } else {
+    removeImagePreview();
+    switchImageTab("url");
+  }
 }
 
 function clearForm() {
-  var fields = ["formTitleEn","formTitle","formSummaryEn","formSummary",
-                "formContentEn","formContent","formImage","formAuthor"];
+  var fields = ["formTitleEn", "formTitle", "formSummaryEn", "formSummary",
+    "formContentEn", "formContent", "formImage", "formAuthor"];
   for (var i = 0; i < fields.length; i++) {
     setVal(fields[i], "");
   }
+  // Reset image upload UI
+  removeImagePreview();
+  switchImageTab("url");
 }
 
 // ---- USERS ----
@@ -511,7 +528,7 @@ function buildUserTable() {
   var tbody = document.getElementById("usersTableBody");
   if (!tbody) return;
   var users = DB.getUsers();
-  var html  = "";
+  var html = "";
   for (var i = 0; i < users.length; i++) {
     var u = users[i];
     var deleteBtn = "";
@@ -562,16 +579,16 @@ function stopCommentsPoll() {
 }
 
 function buildAllComments() {
-  var list     = document.getElementById("allCommentsList");
+  var list = document.getElementById("allCommentsList");
   if (!list) return;
-  var all      = DB.getAllComments();  // object: { articleId: [comments] }
+  var all = DB.getAllComments();  // object: { articleId: [comments] }
   var articles = DB.getArticles();
-  var html     = "";
-  var hasAny   = false;
+  var html = "";
+  var hasAny = false;
 
   var artIds = Object.keys(all);
   for (var i = 0; i < artIds.length; i++) {
-    var artId    = artIds[i];
+    var artId = artIds[i];
     var comments = all[artId] || [];
 
     // Find the article title for this ID
@@ -582,7 +599,7 @@ function buildAllComments() {
 
     for (var j = 0; j < comments.length; j++) {
       hasAny = true;
-      var c  = comments[j];
+      var c = comments[j];
       html += '<div class="admin-comment-row">'
         + '<div class="admin-comment-info">'
         + '<strong>' + escHtml(c.name) + '</strong>'
@@ -604,12 +621,12 @@ function adminDeleteComment(cId) {
 
 // ---- SUBMISSIONS ----
 function buildAllSubmissions(filterStatus) {
-  var list    = document.getElementById("submissionsList");
+  var list = document.getElementById("submissionsList");
   var countEl = document.getElementById("submissionCount");
   if (!list) return;
 
   filterStatus = filterStatus || "all";
-  var all  = DB.getSubmissions();
+  var all = DB.getSubmissions();
   var subs = [];
 
   // Filter by status if needed
@@ -667,7 +684,7 @@ function buildAllSubmissions(filterStatus) {
     html += '<div class="submission-actions">';
     if (sub.status !== "approved") html += '<button class="btn-sub-approve" onclick="updateSubStatus(\'' + sub.id + '\',\'approved\')">✅ Approve</button>';
     if (sub.status !== "rejected") html += '<button class="btn-sub-reject"  onclick="updateSubStatus(\'' + sub.id + '\',\'rejected\')">❌ Reject</button>';
-    if (sub.status !== "pending")  html += '<button class="btn-sub-pending" onclick="updateSubStatus(\'' + sub.id + '\',\'pending\')">⏳ Pending</button>';
+    if (sub.status !== "pending") html += '<button class="btn-sub-pending" onclick="updateSubStatus(\'' + sub.id + '\',\'pending\')">⏳ Pending</button>';
     html += '<button class="btn-delete" onclick="deleteSubm(\'' + sub.id + '\')">🗑 Delete</button>';
     html += '</div></div>';
   }
@@ -706,7 +723,7 @@ function showMsg(id, text, type) {
   var el = document.getElementById(id);
   if (!el) return;
   el.textContent = text;
-  el.className   = "form-msg " + type;
+  el.className = "form-msg " + type;
   setTimeout(function () {
     el.className = "form-msg";
   }, 3500);
@@ -729,10 +746,10 @@ function escHtml(s) {
 
 document.addEventListener("DOMContentLoaded", function () {
 
-  var loadBtn  = document.getElementById("liveNewsLoadBtn");
-  var catSel   = document.getElementById("liveNewsCat");
-  var msgEl    = document.getElementById("liveNewsMsg");
-  var listEl   = document.getElementById("liveNewsList");
+  var loadBtn = document.getElementById("liveNewsLoadBtn");
+  var catSel = document.getElementById("liveNewsCat");
+  var msgEl = document.getElementById("liveNewsMsg");
+  var listEl = document.getElementById("liveNewsList");
 
   // When admin clicks "Fetch News", load articles for selected category
   if (loadBtn) {
@@ -745,11 +762,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
 // Fetches news from our PHP file (which fetches from newsdata.io)
 function loadLiveNews(category) {
-  var msgEl  = document.getElementById("liveNewsMsg");
+  var msgEl = document.getElementById("liveNewsMsg");
   var listEl = document.getElementById("liveNewsList");
 
-  if (msgEl)  msgEl.textContent  = "Fetching news, please wait...";
-  if (listEl) listEl.innerHTML   = "";
+  if (msgEl) msgEl.textContent = "Fetching news, please wait...";
+  if (listEl) listEl.innerHTML = "";
 
   // Ask our PHP file for news (PHP will call newsdata.io)
   var xhr = new XMLHttpRequest();
@@ -826,9 +843,9 @@ function publishLiveArticle(index) {
   var articles = window._liveArticles;
   if (!articles || !articles[index]) return;
 
-  var a   = articles[index];
+  var a = articles[index];
   var btn = document.getElementById("ln-btn-" + index);
-  
+
   if (btn) {
     btn.textContent = "⏳ Fetching full text...";
     btn.style.background = "#f39c12"; // orange
@@ -839,37 +856,37 @@ function publishLiveArticle(index) {
   var xhr = new XMLHttpRequest();
   xhr.open("POST", "php/scrape-article.php", true);
   xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-  
-  xhr.onload = function() {
+
+  xhr.onload = function () {
     var scrapedText = "";
     try {
       var res = JSON.parse(xhr.responseText);
       // If the scraper found a nice big chunk of text (more than 50 characters)
       if (res.ok && res.text && res.text.length > 50) {
-        scrapedText = res.text; 
+        scrapedText = res.text;
       }
-    } catch (e) {}
+    } catch (e) { }
 
     // 2. Prepare the data
     var rawContent = a.content || "";
     if (rawContent.toUpperCase().indexOf("ONLY AVAILABLE IN PAID PLANS") !== -1) {
       rawContent = a.summary || "";
     }
-    
+
     // If our scraper successfully grabbed the BIG article, use it! 
     // Otherwise, fall back to the raw content or summary.
     var finalContent = scrapedText || rawContent || a.summary || "";
-    
+
     var articleData = {
-      titleEn:   a.title,
-      title:     "", // Leave blank for manual Nepali translation
+      titleEn: a.title,
+      title: "", // Leave blank for manual Nepali translation
       summaryEn: a.summary,
-      summary:   "", // Leave blank
+      summary: "", // Leave blank
       contentEn: finalContent,
-      content:   "", // Leave blank
-      image:     a.image,
-      author:    a.author || "NewsData.io",
-      category:  a.category
+      content: "", // Leave blank
+      image: a.image,
+      author: a.author || "NewsData.io",
+      category: a.category
     };
 
     // 3. Save to our database using the existing DB helper
@@ -892,7 +909,7 @@ function publishLiveArticle(index) {
       }
     }
   };
-  
+
   // Send the URL to our scraper script
   xhr.send("url=" + encodeURIComponent(a.link || ""));
 }
@@ -907,3 +924,204 @@ function escLiveHtml(text) {
   safe = safe.replace(/"/g, "&quot;");
   return safe;
 }
+
+// ---------------------------------------------------------
+// IMAGE UPLOAD FUNCTIONS
+// ---------------------------------------------------------
+
+// Switch between URL and Upload tabs
+function switchImageTab(tab) {
+  var urlPanel = document.getElementById("imgUrlPanel");
+  var uploadPanel = document.getElementById("imgUploadPanel");
+  var tabUrl = document.getElementById("imgTabUrl");
+  var tabUpload = document.getElementById("imgTabUpload");
+
+  if (tab === "url") {
+    if (urlPanel) urlPanel.style.display = "block";
+    if (uploadPanel) uploadPanel.style.display = "none";
+    if (tabUrl) tabUrl.classList.add("active");
+    if (tabUpload) tabUpload.classList.remove("active");
+  } else {
+    if (urlPanel) urlPanel.style.display = "none";
+    if (uploadPanel) uploadPanel.style.display = "block";
+    if (tabUrl) tabUrl.classList.remove("active");
+    if (tabUpload) tabUpload.classList.add("active");
+  }
+}
+
+// Show image preview
+function showImagePreview(src) {
+  var wrap = document.getElementById("imagePreviewWrap");
+  var img = document.getElementById("imagePreview");
+  if (wrap && img) {
+    img.src = src;
+    wrap.style.display = "flex";
+  }
+}
+
+// Remove image preview and clear the image field
+function removeImagePreview() {
+  var wrap = document.getElementById("imagePreviewWrap");
+  var img = document.getElementById("imagePreview");
+  var formImage = document.getElementById("formImage");
+  var fileInput = document.getElementById("formImageFile");
+
+  if (wrap) wrap.style.display = "none";
+  if (img) img.src = "";
+  if (formImage) formImage.value = "";
+  if (fileInput) fileInput.value = "";
+
+  // Reset the upload drop zone
+  var dropContent = document.getElementById("uploadDropContent");
+  var progress = document.getElementById("uploadProgress");
+  if (dropContent) dropContent.style.display = "block";
+  if (progress) progress.style.display = "none";
+}
+
+// Upload a file to the server
+function uploadImageFile(file) {
+  // Validate file type
+  var allowed = ["image/jpeg", "image/png", "image/gif", "image/webp"];
+  if (allowed.indexOf(file.type) === -1) {
+    showMsg("formMsg", "Only JPEG, PNG, GIF, and WebP images are allowed.", "error");
+    return;
+  }
+
+  // Validate file size (5MB max)
+  if (file.size > 5 * 1024 * 1024) {
+    showMsg("formMsg", "Image too large. Max 5MB.", "error");
+    return;
+  }
+
+  // Show progress bar
+  var dropContent = document.getElementById("uploadDropContent");
+  var progress = document.getElementById("uploadProgress");
+  var progressBar = document.getElementById("uploadProgressBar");
+  var progressText = document.getElementById("uploadProgressText");
+
+  if (dropContent) dropContent.style.display = "none";
+  if (progress) progress.style.display = "flex";
+  if (progressBar) progressBar.style.width = "0%";
+  if (progressText) progressText.textContent = "Uploading...";
+
+  // Build FormData and send via XHR
+  var formData = new FormData();
+  formData.append("image", file);
+
+  var xhr = new XMLHttpRequest();
+  xhr.open("POST", "php/upload.php", true);
+
+  // Track upload progress
+  xhr.upload.onprogress = function (e) {
+    if (e.lengthComputable) {
+      var pct = Math.round((e.loaded / e.total) * 100);
+      if (progressBar) progressBar.style.width = pct + "%";
+      if (progressText) progressText.textContent = pct + "%";
+    }
+  };
+
+  xhr.onload = function () {
+    if (xhr.status === 200) {
+      try {
+        var res = JSON.parse(xhr.responseText);
+        if (res.ok) {
+          // Set the image path in the hidden URL field
+          var formImage = document.getElementById("formImage");
+          if (formImage) formImage.value = res.path;
+
+          // Show preview
+          showImagePreview(res.path);
+
+          if (progressText) progressText.textContent = "✅ Uploaded!";
+          if (progressBar) progressBar.style.width = "100%";
+
+          showMsg("formMsg", "Image uploaded successfully!", "success");
+        } else {
+          showMsg("formMsg", res.error || "Upload failed.", "error");
+          if (dropContent) dropContent.style.display = "block";
+          if (progress) progress.style.display = "none";
+        }
+      } catch (e) {
+        showMsg("formMsg", "Upload failed — invalid response.", "error");
+        if (dropContent) dropContent.style.display = "block";
+        if (progress) progress.style.display = "none";
+      }
+    } else {
+      showMsg("formMsg", "Upload failed — server error.", "error");
+      if (dropContent) dropContent.style.display = "block";
+      if (progress) progress.style.display = "none";
+    }
+  };
+
+  xhr.onerror = function () {
+    showMsg("formMsg", "Upload failed — network error.", "error");
+    if (dropContent) dropContent.style.display = "block";
+    if (progress) progress.style.display = "none";
+  };
+
+  xhr.send(formData);
+}
+
+// Setup file input and drag-and-drop handlers (called on page load)
+function setupImageUpload() {
+  var fileInput = document.getElementById("formImageFile");
+  var dropZone = document.getElementById("uploadDropZone");
+  var formImage = document.getElementById("formImage");
+
+  // File input change handler
+  if (fileInput) {
+    fileInput.addEventListener("change", function () {
+      if (fileInput.files && fileInput.files[0]) {
+        uploadImageFile(fileInput.files[0]);
+      }
+    });
+  }
+
+  // Drag and drop handlers + click to browse
+  if (dropZone) {
+    // Click anywhere in the drop zone to open file picker
+    dropZone.addEventListener("click", function (e) {
+      // Don't trigger if clicking the browse button (it has its own handler)
+      if (e.target.classList && e.target.classList.contains("upload-browse-btn")) return;
+      if (fileInput) fileInput.click();
+    });
+
+    dropZone.addEventListener("dragover", function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      dropZone.classList.add("drag-over");
+    });
+
+    dropZone.addEventListener("dragleave", function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      dropZone.classList.remove("drag-over");
+    });
+
+    dropZone.addEventListener("drop", function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      dropZone.classList.remove("drag-over");
+
+      if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+        uploadImageFile(e.dataTransfer.files[0]);
+      }
+    });
+  }
+
+  // Show preview when URL is pasted/typed
+  if (formImage) {
+    formImage.addEventListener("input", function () {
+      var url = formImage.value.trim();
+      if (url && (url.indexOf("http") === 0 || url.indexOf("uploads/") === 0)) {
+        showImagePreview(url);
+      } else {
+        var wrap = document.getElementById("imagePreviewWrap");
+        if (wrap) wrap.style.display = "none";
+      }
+    });
+  }
+}
+
+// Initialize image upload on page load
+document.addEventListener("DOMContentLoaded", setupImageUpload);
