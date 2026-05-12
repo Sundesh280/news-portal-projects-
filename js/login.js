@@ -71,13 +71,13 @@ function doLogin() {
     showMsg(loginMsgEl, "Admin accounts must use the Admin Login page.", "error");
     DB.logout();
     setTimeout(function () {
-      window.location.href = "admin-login.php"; // same php/ folder
+      window.location.href = "admin-login.php"; 
     }, 1500);
     return;
   }
 
   // Success - go to home page
-  showMsg(loginMsgEl, "Login successful! Redirecting...", "success");
+  showMsg(loginMsgEl, "Login successful! ", "success");
   setTimeout(function () {
     window.location.href = "../index.php"; // go up from php/ to root
   }, 900);
