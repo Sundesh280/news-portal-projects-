@@ -1,5 +1,5 @@
 <?php
-// ---- Setup ----
+// Setup
 
 header('Content-Type: application/json; charset=utf-8');
 
@@ -30,30 +30,29 @@ if ($cat === 'general') {
 
 $allArticles = array();
 
-// ---- Fetch Logic ----
+// Fetch Logic
 if ($cat === 'general') {
     // TOP STORIES: Try to get news from Kathmandu Post first
     $url1     = 'https://newsdata.io/api/1/latest?apikey=' . $API_KEY . '&q=Kathmandu+Post&language=en';
     $results  = fetchFromApi($url1);
-    
+
     // If no specific Kathmandu Post results, fall back to broad Nepal news
     if (count($results) === 0) {
         $urlFallback = 'https://newsdata.io/api/1/latest?apikey=' . $API_KEY . '&q=Nepal&language=en';
         $results = fetchFromApi($urlFallback);
     }
-    
-    $allArticles = $results;
 
+    $allArticles = $results;
 } else {
     // SPORTS and OTHER CATEGORIES:
     // Call 1: Nepal news for this category
     $url1     = 'https://newsdata.io/api/1/latest?apikey=' . $API_KEY
-              . '&q=Nepal&category=' . $apiCat . '&language=en';
+        . '&q=Nepal&category=' . $apiCat . '&language=en';
     $nepalNews = fetchFromApi($url1);
 
     // Call 2: International news for this category
     $url2     = 'https://newsdata.io/api/1/latest?apikey=' . $API_KEY
-              . '&category=' . $apiCat . '&language=en';
+        . '&category=' . $apiCat . '&language=en';
     $intlNews  = fetchFromApi($url2);
 
     // Combine them
@@ -79,9 +78,7 @@ if ($cat === 'general') {
     }
 }
 
-// -------------------------------------------------------
 // Convert each raw API result into a clean format
-// -------------------------------------------------------
 $articles = array();
 for ($i = 0; $i < count($allArticles); $i++) {
     $item = $allArticles[$i];
@@ -134,7 +131,8 @@ for ($i = 0; $i < count($allArticles); $i++) {
 }
 
 // Simple function to remove raw image URLs from text
-function cleanText($text) {
+function cleanText($text)
+{
     // Remove links ending with image extensions (jpg, png, etc.)
     $text = preg_replace('/\bhttps?:\/\/\S+\.(jpg|jpeg|png|gif|webp)\b/i', '', $text);
     return trim($text);
@@ -142,8 +140,9 @@ function cleanText($text) {
 
 echo json_encode(array('ok' => true, 'articles' => $articles, 'category' => $cat));
 
-// ---- API Helper ----
-function fetchFromApi($url) {
+// API Helper
+function fetchFromApi($url)
+{
     $response = file_get_contents($url);
     if ($response === false) {
         return array(); // request failed
@@ -157,4 +156,3 @@ function fetchFromApi($url) {
     }
     return isset($data['results']) ? $data['results'] : array();
 }
-?>
