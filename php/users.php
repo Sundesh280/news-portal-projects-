@@ -10,9 +10,7 @@ header('Access-Control-Allow-Headers: Content-Type');
 // Read which action the browser is requesting
 $action = isset($_GET['action']) ? $_GET['action'] : '';
 
-// -------------------------------------------------------
 // LOGIN - check email and password, start a session
-// -------------------------------------------------------
 if ($action === 'login') {
     $data     = json_decode(file_get_contents('php://input'), true);
     $email    = strtolower(trim(isset($data['email'])    ? $data['email']    : ''));
@@ -68,9 +66,7 @@ if ($action === 'login') {
     exit;
 }
 
-// -------------------------------------------------------
 // REGISTER - create a new user account
-// -------------------------------------------------------
 if ($action === 'register') {
     $data     = json_decode(file_get_contents('php://input'), true);
     $name     = trim(isset($data['name'])     ? $data['name']     : '');
@@ -134,9 +130,7 @@ if ($action === 'register') {
     exit;
 }
 
-// -------------------------------------------------------
 // LOGOUT (regular user)
-// -------------------------------------------------------
 if ($action === 'logout') {
     session_name('nk_user');
     session_start();
@@ -145,9 +139,7 @@ if ($action === 'logout') {
     exit;
 }
 
-// -------------------------------------------------------
 // LOGOUT (admin)
-// -------------------------------------------------------
 if ($action === 'admin_logout') {
     session_name('nk_admin');
     session_start();
@@ -156,9 +148,7 @@ if ($action === 'admin_logout') {
     exit;
 }
 
-// -------------------------------------------------------
 // GET SESSION (regular user) - check if user is logged in
-// -------------------------------------------------------
 if ($action === 'get_session') {
     session_name('nk_user');
     session_start();
@@ -179,9 +169,7 @@ if ($action === 'get_session') {
     exit;
 }
 
-// -------------------------------------------------------
 // GET SESSION (admin) - check if admin is logged in
-// -------------------------------------------------------
 if ($action === 'get_admin_session') {
     session_name('nk_admin');
     session_start();
@@ -202,9 +190,7 @@ if ($action === 'get_admin_session') {
     exit;
 }
 
-// -------------------------------------------------------
 // GET ALL USERS (admin use only)
-// -------------------------------------------------------
 if ($action === 'get_all') {
     require 'db.php';
     $result = $conn->query("SELECT id, name, email, role, joined_at FROM users ORDER BY joined_at DESC");
@@ -218,9 +204,7 @@ if ($action === 'get_all') {
     exit;
 }
 
-// -------------------------------------------------------
 // DELETE a user (admin only, cannot delete other admins)
-// -------------------------------------------------------
 if ($action === 'delete') {
     require 'db.php';
     $id   = isset($_GET['id']) ? $_GET['id'] : '';
@@ -237,4 +221,3 @@ if ($action === 'delete') {
 
 // If no action matched
 echo json_encode(array('ok' => false, 'error' => 'Unknown action'));
-?>
