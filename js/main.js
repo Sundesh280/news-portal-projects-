@@ -3,7 +3,15 @@
 // ---- Global Variables ----
 
 // List of all categories
-var CATEGORIES = ["general", "business", "technology", "science", "health", "sports", "entertainment"];
+var CATEGORIES = [
+  "general",
+  "business",
+  "technology",
+  "science",
+  "health",
+  "sports",
+  "entertainment",
+];
 
 // Display name for each category
 var CAT_LABELS = {
@@ -13,16 +21,13 @@ var CAT_LABELS = {
   science: "Science",
   health: "Health",
   sports: "Sports",
-  entertainment: "Entertainment"
+  entertainment: "Entertainment",
 };
 
 // Which category is currently selected
 var currentCat = "general";
 
-// ---- Utilities ----
-// ------------------------------------------------------------------
-// escHtml - Makes text safe to put inside HTML (prevents XSS)
-// ------------------------------------------------------------------
+// Escape HTML special characters
 function escHtml(text) {
   if (!text) return "";
   text = text.replace(/&/g, "&amp;");
@@ -32,9 +37,7 @@ function escHtml(text) {
   return text;
 }
 
-// ------------------------------------------------------------------
-// getStoppedIds - Returns an array of article IDs that are stopped
-// ------------------------------------------------------------------
+// Get IDs of stopped articles
 function getStoppedIds() {
   var allArticles = DB.getArticles();
   var stoppedIds = [];
@@ -46,10 +49,7 @@ function getStoppedIds() {
   return stoppedIds;
 }
 
-// ---- Ticker Logic ----
-// ------------------------------------------------------------------
-// applyTickerState - Updates the breaking news ticker bar
-// ------------------------------------------------------------------
+// Ticker Logic — applyTickerState: Updates the breaking news ticker bar
 function applyTickerState() {
   var tickerData = DB.getTickerHeadlines();
   var allStopped = tickerData.allStopped;
@@ -86,7 +86,7 @@ function applyTickerState() {
         safeText = safeText.replace(/&/g, "&amp;");
         safeText = safeText.replace(/</g, "&lt;");
         safeText = safeText.replace(/>/g, "&gt;");
-        items += '<span class="ticker-item">' + safeText + '</span>';
+        items += '<span class="ticker-item">' + safeText + "</span>";
       }
     } else {
       items = '<span class="ticker-item">— No active breaking news —</span>';
@@ -109,10 +109,7 @@ function applyTickerState() {
   }
 }
 
-// ---- Page Load ----
-// ------------------------------------------------------------------
-// Page load - runs when the full HTML page is ready
-// ------------------------------------------------------------------
+// Page load
 document.addEventListener("DOMContentLoaded", function () {
   applyTickerState();
   buildCategoryNav();
@@ -127,7 +124,7 @@ document.addEventListener("DOMContentLoaded", function () {
       weekday: "long",
       year: "numeric",
       month: "long",
-      day: "numeric"
+      day: "numeric",
     });
   }
 
@@ -166,10 +163,7 @@ document.addEventListener("DOMContentLoaded", function () {
   startRealTimeNews();
 });
 
-// ---- Auth UI ----
-// ------------------------------------------------------------------
-// updateAuthUI - Updates the login/register area without page reload
-// ------------------------------------------------------------------
+// Update login/register UI
 function updateAuthUI() {
   var session = DB.getSession();
   var userSession = null;
@@ -195,9 +189,7 @@ function updateAuthUI() {
   }
 }
 
-// ------------------------------------------------------------------
-// REAL TIME POLLING
-// ------------------------------------------------------------------
+// Real-time polling
 var lastKnownArticleId = null;
 
 function startRealTimeNews() {
@@ -225,9 +217,7 @@ function startRealTimeNews() {
   }, 8000);
 }
 
-// ------------------------------------------------------------------
-// buildCategoryNav - Creates the category buttons in the navigation bar
-// ------------------------------------------------------------------
+// Build category nav buttons
 function buildCategoryNav() {
   var nav = document.getElementById("categoryNav");
   if (!nav) return;
@@ -286,9 +276,7 @@ function makeCatClickHandler(cat, btn) {
   };
 }
 
-// ------------------------------------------------------------------
-// renderArticles - Shows articles for the selected category
-// ------------------------------------------------------------------
+// Render articles for the selected category
 function renderArticles(cat) {
   var heroContainer = document.getElementById("heroContainer");
   var grid = document.getElementById("newsGrid");
@@ -342,7 +330,8 @@ function renderArticles(cat) {
   // Nothing to show
   if (visible.length === 0) {
     if (heroContainer) heroContainer.innerHTML = "";
-    grid.innerHTML = '<p class="empty-msg">No articles in this category yet.</p>';
+    grid.innerHTML =
+      '<p class="empty-msg">No articles in this category yet.</p>';
     return;
   }
 
@@ -350,18 +339,33 @@ function renderArticles(cat) {
   var featured = visible[0];
 
   // Build hero card HTML
-  var heroHtml = '<div class="hero-card" onclick="openArticle(\'' + featured.id + '\')">'
-    + '<div class="hero-img-wrap"><img src="' + featured.image + '" alt=""'
-    + ' onerror="this.src=\'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800&q=80\'" /></div>'
-    + '<div class="hero-body">'
-    + '<h2 class="hero-title">' + escHtml(featured.titleEn) + '</h2>'
-    + '<p class="hero-summary">' + escHtml(featured.summaryEn) + '</p>'
-    + '<div class="hero-labels"><span class="hero-badge">TOP STORIES</span>'
-    + '<span class="hero-category-pill">' + CAT_LABELS[featured.category] + '</span></div>'
-    + '<div class="hero-meta"><span>👤 ' + escHtml(featured.author) + '</span>'
-    + '<span>🕐 ' + featured.date + '</span></div>'
-    + '<div class="hero-scroll-hint">↓ Scroll for more stories</div>'
-    + '</div></div>';
+  var heroHtml =
+    '<div class="hero-card" onclick="openArticle(\'' +
+    featured.id +
+    "')\">" +
+    '<div class="hero-img-wrap"><img src="' +
+    featured.image +
+    '" alt=""' +
+    " onerror=\"this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800&q=80'\" /></div>" +
+    '<div class="hero-body">' +
+    '<h2 class="hero-title">' +
+    escHtml(featured.titleEn) +
+    "</h2>" +
+    '<p class="hero-summary">' +
+    escHtml(featured.summaryEn) +
+    "</p>" +
+    '<div class="hero-labels"><span class="hero-badge">TOP STORIES</span>' +
+    '<span class="hero-category-pill">' +
+    CAT_LABELS[featured.category] +
+    "</span></div>" +
+    '<div class="hero-meta"><span>👤 ' +
+    escHtml(featured.author) +
+    "</span>" +
+    "<span>🕐 " +
+    featured.date +
+    "</span></div>" +
+    '<div class="hero-scroll-hint">↓ Scroll for more stories</div>' +
+    "</div></div>";
 
   if (heroContainer) heroContainer.innerHTML = heroHtml;
 
@@ -371,27 +375,44 @@ function renderArticles(cat) {
     gridHtml = '<div class="cards-grid">';
     for (var n = 1; n < visible.length; n++) {
       var a = visible[n];
-      gridHtml += '<div class="news-card" onclick="openArticle(\'' + a.id + '\')">'
-        + '<div class="card-img-wrap"><img src="' + a.image + '" alt=""'
-        + ' onerror="this.src=\'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800&q=60\'" /></div>'
-        + '<div class="card-body">'
-        + '<span class="cat-badge cat-' + a.category + '">' + CAT_LABELS[a.category] + '</span>'
-        + '<h3 class="card-title">' + escHtml(a.titleEn) + '</h3>'
-        + '<p class="card-summary">' + escHtml(a.summaryEn) + '</p>'
-        + '<div class="meta"><span>✍ ' + escHtml(a.author) + '</span>'
-        + '<span>📅 ' + a.date + '</span></div>'
-        + '<button class="read-more-btn" onclick="event.stopPropagation();openArticle(\'' + a.id + '\')">Read More →</button>'
-        + '</div></div>';
+      gridHtml +=
+        '<div class="news-card" onclick="openArticle(\'' +
+        a.id +
+        "')\">" +
+        '<div class="card-img-wrap"><img src="' +
+        a.image +
+        '" alt=""' +
+        " onerror=\"this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800&q=60'\" /></div>" +
+        '<div class="card-body">' +
+        '<span class="cat-badge cat-' +
+        a.category +
+        '">' +
+        CAT_LABELS[a.category] +
+        "</span>" +
+        '<h3 class="card-title">' +
+        escHtml(a.titleEn) +
+        "</h3>" +
+        '<p class="card-summary">' +
+        escHtml(a.summaryEn) +
+        "</p>" +
+        '<div class="meta"><span>✍ ' +
+        escHtml(a.author) +
+        "</span>" +
+        "<span>📅 " +
+        a.date +
+        "</span></div>" +
+        '<button class="read-more-btn" onclick="event.stopPropagation();openArticle(\'' +
+        a.id +
+        "')\">Read More →</button>" +
+        "</div></div>";
     }
-    gridHtml += '</div>';
+    gridHtml += "</div>";
   }
 
   grid.innerHTML = gridHtml;
 }
 
-// ------------------------------------------------------------------
-// buildSidebar - Fills Most Read and Latest sections in the sidebar
-// ------------------------------------------------------------------
+// Build sidebar (Most Read + Latest)
 function buildSidebar() {
   var stopped = getStoppedIds();
   var allArticles = DB.getArticles();
@@ -439,9 +460,7 @@ function buildSidebar() {
   buildSidebarList("latestList", latest, false);
 }
 
-// ------------------------------------------------------------------
-// buildSidebarList - Renders a list of articles inside a sidebar section
-// ------------------------------------------------------------------
+// Render a sidebar article list
 function buildSidebarList(elementId, articles, showRank) {
   var el = document.getElementById(elementId);
   if (!el) return;
@@ -449,18 +468,30 @@ function buildSidebarList(elementId, articles, showRank) {
   var html = "";
   for (var i = 0; i < articles.length; i++) {
     var art = articles[i];
-    html += '<div class="sidebar-article-item" onclick="openArticle(\'' + art.id + '\')">'
-      + '<img src="' + art.image + '" alt=""'
-      + ' onerror="this.src=\'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=400&q=60\'" />';
+    html +=
+      '<div class="sidebar-article-item" onclick="openArticle(\'' +
+      art.id +
+      "')\">" +
+      '<img src="' +
+      art.image +
+      '" alt=""' +
+      " onerror=\"this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=400&q=60'\" />";
 
     if (showRank) {
-      html += '<div class="sidebar-rank">' + (i + 1) + '</div>';
+      html += '<div class="sidebar-rank">' + (i + 1) + "</div>";
     }
 
-    html += '<div class="sidebar-article-item-body">'
-      + '<div class="sidebar-article-item-title">' + escHtml(art.titleEn) + '</div>'
-      + '<div class="sidebar-article-item-meta">📅 ' + art.date + ' · 👁 ' + art.views + '</div>'
-      + '</div></div>';
+    html +=
+      '<div class="sidebar-article-item-body">' +
+      '<div class="sidebar-article-item-title">' +
+      escHtml(art.titleEn) +
+      "</div>" +
+      '<div class="sidebar-article-item-meta">📅 ' +
+      art.date +
+      " · 👁 " +
+      art.views +
+      "</div>" +
+      "</div></div>";
   }
 
   el.innerHTML = html;
