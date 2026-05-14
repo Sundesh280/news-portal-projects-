@@ -10,9 +10,7 @@ require 'db.php'; // connect to database
 // Read which action the browser is requesting
 $action = isset($_GET['action']) ? $_GET['action'] : '';
 
-// -------------------------------------------------------
 // GET ALL articles (sorted newest first)
-// -------------------------------------------------------
 if ($action === 'get_all') {
     $result   = $conn->query("SELECT * FROM articles ORDER BY date DESC, created_at DESC");
     $articles = array();
@@ -25,9 +23,7 @@ if ($action === 'get_all') {
     exit;
 }
 
-// -------------------------------------------------------
 // GET LATEST article ID (for real-time polling)
-// -------------------------------------------------------
 if ($action === 'get_latest_id') {
     $result = $conn->query("SELECT id FROM articles ORDER BY created_at DESC LIMIT 1");
     $row    = $result->fetch_assoc();
@@ -35,9 +31,7 @@ if ($action === 'get_latest_id') {
     exit;
 }
 
-// -------------------------------------------------------
 // GET ONE article by its ID
-// -------------------------------------------------------
 if ($action === 'get_one') {
     $id     = $conn->real_escape_string($_GET['id']);
     $result = $conn->query("SELECT * FROM articles WHERE id='$id' LIMIT 1");
@@ -51,9 +45,7 @@ if ($action === 'get_one') {
     exit;
 }
 
-// -------------------------------------------------------
 // ADD a new article
-// -------------------------------------------------------
 if ($action === 'add') {
     // Read the JSON data sent from the browser
     $data = json_decode(file_get_contents('php://input'), true);
@@ -99,9 +91,7 @@ if ($action === 'add') {
     exit;
 }
 
-// -------------------------------------------------------
 // UPDATE an existing article
-// -------------------------------------------------------
 if ($action === 'update') {
     $data = json_decode(file_get_contents('php://input'), true);
 
@@ -131,9 +121,7 @@ if ($action === 'update') {
     exit;
 }
 
-// -------------------------------------------------------
 // DELETE an article (also deletes its comments)
-// -------------------------------------------------------
 if ($action === 'delete') {
     $id = $conn->real_escape_string($_GET['id']);
 
@@ -147,10 +135,8 @@ if ($action === 'delete') {
     exit;
 }
 
-// -------------------------------------------------------
 // INCREMENT VIEWS — count one more view for this article
 // Only counts once per browser session (not every page load)
-// -------------------------------------------------------
 if ($action === 'increment_views') {
     $id = $conn->real_escape_string($_GET['id']);
 
@@ -167,9 +153,7 @@ if ($action === 'increment_views') {
     exit;
 }
 
-// -------------------------------------------------------
 // TOGGLE STOP — hide or show an article on the homepage
-// -------------------------------------------------------
 if ($action === 'toggle_stop') {
     $id = $conn->real_escape_string($_GET['id']);
     $conn->query("UPDATE articles SET is_stopped = NOT is_stopped WHERE id='$id'");
@@ -180,11 +164,10 @@ if ($action === 'toggle_stop') {
 // If no action matched, return an error
 echo json_encode(array('ok' => false, 'error' => 'Unknown action'));
 
-// -------------------------------------------------------
 // formatArticle - Converts a database row into a clean array
 // that matches what the JavaScript frontend expects
-// -------------------------------------------------------
-function formatArticle($row) {
+function formatArticle($row)
+{
     return array(
         'id'        => $row['id'],
         'category'  => $row['category'],
@@ -201,4 +184,3 @@ function formatArticle($row) {
         'isStopped' => (bool)$row['is_stopped'],
     );
 }
-?>
