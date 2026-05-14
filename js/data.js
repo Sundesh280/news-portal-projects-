@@ -7,11 +7,7 @@ var DB = {
 
   // ---- Setup & Helpers ----
 
-  // ------------------------------------------------------------------
-  // _base - Returns the folder path where PHP files are located
-  // Pages at root level (index.php, etc.) use 'php/' as the prefix.
-  // Pages inside the php/ folder set window.__NK_BASE = '' first.
-  // ------------------------------------------------------------------
+  // Returns the base path for PHP files
   _base: function () {
     if (typeof window.__NK_BASE !== "undefined") {
       return window.__NK_BASE;
@@ -19,11 +15,7 @@ var DB = {
     return "php/";
   },
 
-  // ------------------------------------------------------------------
-  // _get - Sends a GET request to a PHP file and returns the response
-  // file   = name of the PHP file (without .php), e.g. "articles"
-  // params = query string, e.g. "action=get_all"
-  // ------------------------------------------------------------------
+  // Send a GET request to a PHP file
   _get: function (file, params) {
     var xhr = new XMLHttpRequest();
     // Add timestamp to prevent browser from caching the response
@@ -37,12 +29,7 @@ var DB = {
     }
   },
 
-  // ------------------------------------------------------------------
-  // _post - Sends a POST request with a JSON body to a PHP file
-  // file   = name of the PHP file (without .php), e.g. "users"
-  // params = query string
-  // body   = JavaScript object to send as JSON (the data payload)
-  // ------------------------------------------------------------------
+  // Send a POST request with JSON body
   _post: function (file, params, body) {
     var xhr = new XMLHttpRequest();
     xhr.open("POST", this._base() + file + ".php?" + params, false);
@@ -282,7 +269,7 @@ var DB = {
     return {};
   },
 
-  // ==================== SUBMISSIONS ====================
+  // ---- Submissions ----
 
   // Get all news submissions from the public
   getSubmissions: function () {
@@ -313,7 +300,7 @@ var DB = {
     this._get("submissions", "action=delete&id=" + encodeURIComponent(id));
   },
 
-  // ==================== TICKER (Breaking News) ====================
+  // ---- Ticker (Breaking News) ----
 
   // Get all breaking news headlines
   getTickerHeadlines: function () {
