@@ -1,8 +1,6 @@
 /* article.js - Handles opening, closing, and commenting on a single article */
 
-// ------------------------------------------------------------------
-// openArticle - Shows the full article view for a given article ID
-// ------------------------------------------------------------------
+// Open and display a full article
 function openArticle(id) {
   var art = DB.getArticleById(id);
   if (!art) return; // Article not found, do nothing
@@ -124,9 +122,7 @@ function openArticle(id) {
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
-// ------------------------------------------------------------------
-// Page load - set up buttons and check if URL has an article to open
-// ------------------------------------------------------------------
+// Setup buttons and check URL for article ID
 document.addEventListener("DOMContentLoaded", function () {
 
   // Back button — goes back to the home view
@@ -178,17 +174,13 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 });
 
-// ------------------------------------------------------------------
-// closeArticle - Hides article view, shows home view
-// ------------------------------------------------------------------
+// Close article, go back to home
 function closeArticle() {
   document.getElementById("articleView").style.display = "none";
   document.getElementById("homeView").style.display   = "";
 }
 
-// ------------------------------------------------------------------
-// loadComments - Loads and displays comments for an article
-// ------------------------------------------------------------------
+// Load and show comments for an article
 function loadComments(artId) {
   var session     = DB.getSession();
   var userSession = null;
@@ -258,9 +250,7 @@ function loadComments(artId) {
   commentList.innerHTML = html;
 }
 
-// ------------------------------------------------------------------
-// editCommentUI - Opens a prompt to edit a comment
-// ------------------------------------------------------------------
+// Edit a comment via prompt
 window.editCommentUI = function (artId, commentId) {
   var textEl = document.getElementById("comment-text-" + commentId);
   if (!textEl) return;
@@ -279,9 +269,7 @@ window.editCommentUI = function (artId, commentId) {
   }
 };
 
-// ------------------------------------------------------------------
-// deleteCommentUI - Asks for confirmation then deletes a comment
-// ------------------------------------------------------------------
+// Delete a comment with confirmation
 window.deleteCommentUI = function (artId, commentId) {
   var confirmed = confirm("Are you sure you want to delete this comment?");
   if (confirmed) {
@@ -290,9 +278,7 @@ window.deleteCommentUI = function (artId, commentId) {
   }
 };
 
-// ------------------------------------------------------------------
-// escHtml - Makes text safe to put inside HTML (prevents XSS)
-// ------------------------------------------------------------------
+// Escape HTML special characters
 function escHtml(text) {
   if (!text) return "";
   var safe = String(text);
@@ -303,9 +289,7 @@ function escHtml(text) {
   return safe;
 }
 
-// ------------------------------------------------------------------
-// isCodeJunk - Detects if a paragraph is likely code or script junk
-// ------------------------------------------------------------------
+// Check if text looks like code/script junk
 function isCodeJunk(text) {
   if (!text || text.length < 5) return false;
 
