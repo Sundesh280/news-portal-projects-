@@ -10,9 +10,7 @@ require 'db.php';
 
 $action = isset($_GET['action']) ? $_GET['action'] : '';
 
-// -------------------------------------------------------
 // GET ALL headlines + the global stopped state
-// -------------------------------------------------------
 if ($action === 'get_all') {
     $result    = $conn->query("SELECT * FROM ticker_headlines ORDER BY created_at ASC");
     $headlines = array();
@@ -36,9 +34,7 @@ if ($action === 'get_all') {
     exit;
 }
 
-// -------------------------------------------------------
 // ADD a new headline
-// -------------------------------------------------------
 if ($action === 'add') {
     $data = json_decode(file_get_contents('php://input'), true);
     $text = $conn->real_escape_string(trim(isset($data['text']) ? $data['text'] : ''));
@@ -55,9 +51,7 @@ if ($action === 'add') {
     exit;
 }
 
-// -------------------------------------------------------
 // REWRITE (edit) a headline's text
-// -------------------------------------------------------
 if ($action === 'rewrite') {
     $data = json_decode(file_get_contents('php://input'), true);
     $id   = $conn->real_escape_string(isset($data['id'])   ? $data['id']   : '');
@@ -73,9 +67,7 @@ if ($action === 'rewrite') {
     exit;
 }
 
-// -------------------------------------------------------
 // TOGGLE one headline on or off
-// -------------------------------------------------------
 if ($action === 'toggle') {
     $id = $conn->real_escape_string($_GET['id']);
     $conn->query("UPDATE ticker_headlines SET is_active = NOT is_active WHERE id='$id'");
@@ -83,9 +75,7 @@ if ($action === 'toggle') {
     exit;
 }
 
-// -------------------------------------------------------
 // TOGGLE ALL - start or stop all headlines at once
-// -------------------------------------------------------
 if ($action === 'toggle_all') {
     $conn->query("UPDATE ticker_headlines SET all_stopped = NOT all_stopped");
 
@@ -104,9 +94,7 @@ if ($action === 'toggle_all') {
     exit;
 }
 
-// -------------------------------------------------------
 // DELETE a headline
-// -------------------------------------------------------
 if ($action === 'delete') {
     $id = $conn->real_escape_string($_GET['id']);
     $conn->query("DELETE FROM ticker_headlines WHERE id='$id'");
@@ -116,10 +104,9 @@ if ($action === 'delete') {
 
 echo json_encode(array('ok' => false, 'error' => 'Unknown action'));
 
-// -------------------------------------------------------
 // formatHeadline - converts a DB row into a clean array
-// -------------------------------------------------------
-function formatHeadline($row) {
+function formatHeadline($row)
+{
     return array(
         'id'         => $row['id'],
         'text'       => $row['text_body'],
@@ -127,4 +114,3 @@ function formatHeadline($row) {
         'allStopped' => (bool)$row['all_stopped'],
     );
 }
-?>
