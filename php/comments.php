@@ -15,10 +15,11 @@ require 'db.php';
 $action = isset($_GET['action']) ? $_GET['action'] : '';
 
 // Helper function to filter bad words
-function filterBadWords($text) {
+function filterBadWords($text)
+{
     // Array of common bad words to filter
-    $badWords = array('sala', 'shit', 'bitch',  'cunt', 'bastard',  'slut', 'whore','retard', 'idiot', 'stupid', 'dumbass', 'crap', 'bullshit');
-    
+    $badWords = array('sala', 'shit', 'bitch',  'cunt', 'bastard',  'slut', 'whore', 'retard', 'idiot', 'stupid', 'dumbass', 'crap', 'bullshit');
+
     foreach ($badWords as $word) {
         $replacement = str_repeat('*', strlen($word));
         // Use regex \b for word boundary to avoid censoring parts of normal words
@@ -27,9 +28,7 @@ function filterBadWords($text) {
     return $text;
 }
 
-// -------------------------------------------------------
 // GET comments for one article
-// -------------------------------------------------------
 if ($action === 'get') {
     $article_id = $conn->real_escape_string(isset($_GET['article_id']) ? $_GET['article_id'] : '');
     $result     = $conn->query("SELECT * FROM comments WHERE article_id='$article_id' ORDER BY created_at ASC");
@@ -49,9 +48,7 @@ if ($action === 'get') {
     exit;
 }
 
-// -------------------------------------------------------
 // GET ALL comments (for admin panel, grouped by article)
-// -------------------------------------------------------
 if ($action === 'get_all') {
     $result = $conn->query(
         "SELECT c.*, a.title_en
@@ -84,9 +81,7 @@ if ($action === 'get_all') {
     exit;
 }
 
-// -------------------------------------------------------
 // ADD a comment (user must be logged in)
-// -------------------------------------------------------
 if ($action === 'add') {
     // Must be logged in
     if (empty($_SESSION['user_id'])) {
@@ -130,9 +125,7 @@ if ($action === 'add') {
     exit;
 }
 
-// -------------------------------------------------------
 // EDIT a comment (only owner or admin can edit)
-// -------------------------------------------------------
 if ($action === 'edit') {
     if (empty($_SESSION['user_id'])) {
         echo json_encode(array('ok' => false, 'error' => 'Login required.'));
@@ -171,9 +164,7 @@ if ($action === 'edit') {
     exit;
 }
 
-// -------------------------------------------------------
 // DELETE a comment (only owner or admin can delete)
-// -------------------------------------------------------
 if ($action === 'delete') {
     if (empty($_SESSION['user_id'])) {
         echo json_encode(array('ok' => false, 'error' => 'Login required.'));
@@ -201,4 +192,3 @@ if ($action === 'delete') {
 }
 
 echo json_encode(array('ok' => false, 'error' => 'Unknown action'));
-?>
