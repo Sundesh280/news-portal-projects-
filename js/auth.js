@@ -1,9 +1,6 @@
 /* auth.js - Updates the login/logout area in the page header */
 
-// ------------------------------------------------------------------
-// updateHeaderAuth - Shows login/register links or user name
-// depending on whether someone is logged in
-// ------------------------------------------------------------------
+// Show login/register or username based on session
 function updateHeaderAuth() {
   var session = DB.getSession();
 
