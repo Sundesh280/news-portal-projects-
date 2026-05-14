@@ -774,3 +774,41 @@ a:hover {
     box-shadow: 0 0 0 0 rgba(192, 57, 43, 0);
   }
 }
+
+/* ── Air Quality Bar ───────────────────────────────── */
+.air-quality-bar {
+  background: #1a1208;
+  color: #ccc;
+  font-family: var(--font-ui);
+  font-size: 0.78rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 24px;
+  border-top: 1px solid #2a2a2a;
+}
+
+.aqi-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.aqi-date {
+  color: #888;
+}
+
+.aqi-divider {
+  color: #444;
+}
+
+.aqi-label {
+  color: #bbb;
+}
+
+.aqi-weather {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: #ccc;
+}
