@@ -30,19 +30,16 @@ fetch("php/air-pollution.php?city=biratnagar")
   })
   .catch(() => {});
 
-const OWM_KEY = "3499debf8404c6fe9a44f9785b68b0ad";
-fetch(
-  `https://api.openweathermap.org/data/2.5/weather?lat=26.4525&lon=87.2718&appid=${OWM_KEY}&units=metric`,
-)
+// Weather - fetch through PHP proxy (API key stays server-side)
+fetch("php/air-pollution.php?city=biratnagar&action=weather")
   .then((r) => r.json())
   .then((d) => {
-    const temp = Math.round(d.main?.temp ?? 0);
-    const icon = d.weather?.[0]?.icon;
+    if (!d.ok) return;
     document.getElementById("aqiWeatherText").textContent =
-      `${temp}°C  Biratnagar`;
-    if (icon) {
+      `${d.temp}°C  Biratnagar`;
+    if (d.icon) {
       const img = document.getElementById("aqiWeatherIcon");
-      img.src = `https://openweathermap.org/img/wn/${icon}.png`;
+      img.src = `https://openweathermap.org/img/wn/${d.icon}.png`;
       img.style.display = "inline";
     }
   })
