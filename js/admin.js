@@ -28,9 +28,7 @@ document.addEventListener("DOMContentLoaded", function () {
   startTickerPoll();
 });
 
-// ------------------------------------------------------------------
-// REAL TIME ARTICLE POLLING (ADMIN)
-// ------------------------------------------------------------------
+// Real-time article polling
 var lastKnownAdminArtId = null;
 function startAdminArticlePoll() {
   lastKnownAdminArtId = DB.getLatestArticleId();
@@ -740,9 +738,7 @@ function escHtml(s) {
   return safe;
 }
 
-// ---------------------------------------------------------
-// Live News Fetching Logic (Moved from admin.php)
-// ---------------------------------------------------------
+// Live news fetching
 
 document.addEventListener("DOMContentLoaded", function () {
 
@@ -925,9 +921,7 @@ function escLiveHtml(text) {
   return safe;
 }
 
-// ---------------------------------------------------------
-// IMAGE UPLOAD FUNCTIONS
-// ---------------------------------------------------------
+// Image upload functions
 
 // Switch between URL and Upload tabs
 function switchImageTab(tab) {
