@@ -10,9 +10,7 @@ require 'db.php';
 
 $action = isset($_GET['action']) ? $_GET['action'] : '';
 
-// -------------------------------------------------------
 // GET ALL submissions (admin panel)
-// -------------------------------------------------------
 if ($action === 'get_all') {
     $result = $conn->query("SELECT * FROM submissions ORDER BY submitted_at DESC");
     $subs   = array();
@@ -25,9 +23,7 @@ if ($action === 'get_all') {
     exit;
 }
 
-// -------------------------------------------------------
 // ADD a new submission (public user sends a news tip)
-// -------------------------------------------------------
 if ($action === 'add') {
     $data     = json_decode(file_get_contents('php://input'), true);
 
@@ -86,9 +82,7 @@ if ($action === 'add') {
     exit;
 }
 
-// -------------------------------------------------------
 // UPDATE STATUS - admin approves, rejects, or sets pending
-// -------------------------------------------------------
 if ($action === 'update_status') {
     $data   = json_decode(file_get_contents('php://input'), true);
     $id     = $conn->real_escape_string(isset($data['id'])     ? $data['id']     : '');
@@ -106,9 +100,7 @@ if ($action === 'update_status') {
     exit;
 }
 
-// -------------------------------------------------------
 // DELETE a submission
-// -------------------------------------------------------
 if ($action === 'delete') {
     $id = $conn->real_escape_string($_GET['id']);
     $conn->query("DELETE FROM submissions WHERE id='$id'");
@@ -118,10 +110,9 @@ if ($action === 'delete') {
 
 echo json_encode(array('ok' => false, 'error' => 'Unknown action'));
 
-// -------------------------------------------------------
 // formatSubmission - converts a DB row into a clean array
-// -------------------------------------------------------
-function formatSubmission($row) {
+function formatSubmission($row)
+{
     return array(
         'id'                 => $row['id'],
         'subscriberId'       => $row['subscriber_id'],
@@ -143,4 +134,3 @@ function formatSubmission($row) {
         'status'             => $row['status'],
     );
 }
-?>
