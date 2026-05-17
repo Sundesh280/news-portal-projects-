@@ -19,87 +19,81 @@ function openArticle(id) {
   document.getElementById("artCategory").textContent = art.category;
   document.getElementById("artCategory").className   = "cat-badge cat-" + art.category;
 
-  document.getElementById("artTitleEn").textContent  = art.titleEn  || art.title   || "";
-  document.getElementById("artTitle").textContent    = art.title    || "";
-  document.getElementById("artSummaryEn").textContent = art.summaryEn || art.summary || "";
-  document.getElementById("artAuthor").textContent   = art.author   || "";
-  document.getElementById("artDate").textContent     = art.date     || "";
-  document.getElementById("artViews").textContent    = (art.views   || 0) + " views";
-  document.getElementById("artImage").src            = art.image    || "";
+  // Use currentLang from lang-toggle.js if available
+  var lang = (typeof currentLang !== "undefined") ? currentLang : "en";
 
-  // Build the article body
-  // First try contentEn, then content, then fall back to summary
-  var rawText = art.contentEn || art.content || art.summaryEn || art.summary || "";
+  // If Nepali mode and applyArticleLang exists, use it (handles auto-translation)
+  if (lang === "ne" && typeof applyArticleLang === "function") {
+    document.getElementById("artAuthor").textContent   = art.author   || "";
+    document.getElementById("artDate").textContent     = art.date     || "";
+    var viewsLabel = typeof t === "function" ? t("views") : "views";
+    document.getElementById("artViews").textContent    = (art.views   || 0) + " " + viewsLabel;
+    document.getElementById("artImage").src            = art.image    || "";
+    applyArticleLang(id);
+  } else {
+    document.getElementById("artTitleEn").textContent  = art.titleEn  || art.title   || "";
+    document.getElementById("artTitle").textContent    = art.title    || "";
+    document.getElementById("artSummaryEn").textContent = art.summaryEn || art.summary || "";
+    document.getElementById("artAuthor").textContent   = art.author   || "";
+    document.getElementById("artDate").textContent     = art.date     || "";
+    document.getElementById("artViews").textContent    = (art.views   || 0) + " views";
+    document.getElementById("artImage").src            = art.image    || "";
 
-  // If the API stored the "paid plan" error in our database, swap it for the summary
-  if (rawText.toUpperCase().indexOf("ONLY AVAILABLE IN PAID PLANS") !== -1) {
-    rawText = art.summaryEn || art.summary || "";
-  }
+    var rawText = art.contentEn || art.content || art.summaryEn || art.summary || "";
+    if (rawText.toUpperCase().indexOf("ONLY AVAILABLE IN PAID PLANS") !== -1) {
+      rawText = art.summaryEn || art.summary || "";
+    }
 
-  var bodyText = rawText;
+    var bodyText = rawText;
 
-  // newsdata.io free plan truncates content with "[+XXXX chars]" at the end
-  // Detect this and remove the marker so it doesn't appear in the article
-  var isTruncated = false;
-  var cutIndex = bodyText.indexOf("[+");
-  if (cutIndex !== -1 && bodyText.indexOf("chars]") !== -1) {
-    isTruncated = true;
-    bodyText = bodyText.substring(0, cutIndex).trim(); // remove the "[+xxx chars]" part
-  }
+    var cutIndex = bodyText.indexOf("[+");
+    if (cutIndex !== -1 && bodyText.indexOf("chars]") !== -1) {
+      bodyText = bodyText.substring(0, cutIndex).trim();
+    }
 
-  // Try splitting on double newline first (most common)
-  var paragraphs = bodyText.split("\n\n");
+    var paragraphs = bodyText.split("\n\n");
+    if (paragraphs.length <= 1) {
+      paragraphs = bodyText.split("\n");
+    }
 
-  // If only 1 block, try splitting on single newline
-  if (paragraphs.length <= 1) {
-    paragraphs = bodyText.split("\n");
-  }
-
-  // If still just one long block of text (no newlines at all),
-  // split it into groups of 3 sentences so it is readable
-  if (paragraphs.length <= 1 && bodyText.length > 400) {
-    var sentences = bodyText.match(/[^.!?]+[.!?]+/g);
-    if (sentences && sentences.length > 3) {
-      paragraphs = [];
-      var chunk = "";
-      for (var s = 0; s < sentences.length; s++) {
-        chunk += sentences[s];
-        // Every 3 sentences = one paragraph
-        if ((s + 1) % 3 === 0) {
+    if (paragraphs.length <= 1 && bodyText.length > 400) {
+      var sentences = bodyText.match(/[^.!?]+[.!?]+/g);
+      if (sentences && sentences.length > 3) {
+        paragraphs = [];
+        var chunk = "";
+        for (var s = 0; s < sentences.length; s++) {
+          chunk += sentences[s];
+          if ((s + 1) % 3 === 0) {
+            paragraphs.push(chunk.trim());
+            chunk = "";
+          }
+        }
+        if (chunk.trim() !== "") {
           paragraphs.push(chunk.trim());
-          chunk = "";
         }
       }
-      if (chunk.trim() !== "") {
-        paragraphs.push(chunk.trim()); // add any remaining sentences
+    }
+
+    var bodyHtml = "";
+    for (var i = 0; i < paragraphs.length; i++) {
+      var para = paragraphs[i].trim();
+      if (para !== "") {
+        if (typeof isCodeJunk === "function" && isCodeJunk(para)) {
+          continue;
+        }
+        if (para.toLowerCase().startsWith("source: http")) {
+          continue;
+        }
+        bodyHtml += "<p>" + escHtml(para) + "</p>";
       }
     }
-  }
 
-  // Build HTML - wrap each paragraph in a <p> tag
-  var bodyHtml = "";
-  for (var i = 0; i < paragraphs.length; i++) {
-    var para = paragraphs[i].trim();
-    if (para !== "") {
-      // Skip paragraphs that look like code or script junk
-      if (typeof isCodeJunk === "function" && isCodeJunk(para)) {
-        continue;
-      }
-      
-      // Hide any "Source: https://..." lines from existing articles
-      if (para.toLowerCase().startsWith("source: http")) {
-        continue;
-      }
-      bodyHtml += "<p>" + escHtml(para) + "</p>";
+    if (!bodyHtml) {
+      bodyHtml = "<p style=\"color:#aaa;\">No article content available.</p>";
     }
-  }
 
-  // If no body text at all, show a message
-  if (!bodyHtml) {
-    bodyHtml = "<p style=\"color:#aaa;\">No article content available.</p>";
-  }
-
-  document.getElementById("artBody").innerHTML = bodyHtml;
+    document.getElementById("artBody").innerHTML = bodyHtml;
+  } // end else (English mode)
 
   // Build share links
   var pageUrl  = window.location.href.split("?")[0] + "?article=" + id;
