@@ -97,11 +97,11 @@ if (empty($_SESSION['user_id']) || $_SESSION['user_role'] !== 'admin') {
           <div class="form-mode-badge" id="formModeBadge">✏️ New Article</div>
           <div class="form-grid">
             <div class="form-field">
-              <label>Title (English) <span style="font-weight:400;color:#888;">— or fill Nepali below</span></label>
+              <label>Title (English) <span style="font-weight:400;color:#888;">— auto-translates to Nepali</span></label>
               <input type="text" id="formTitleEn" placeholder="Article headline in English" />
             </div>
             <div class="form-field">
-              <label>शीर्षक (नेपाली) <span style="font-weight:400;color:#888;">— वा माथि अंग्रेजी</span></label>
+              <label>शीर्षक (नेपाली) <span style="font-weight:400;color:#888;">— स्वचालित अनुवाद</span></label>
               <input type="text" id="formTitle" placeholder="नेपालीमा शीर्षक" />
             </div>
             <div class="form-field full-width">
@@ -119,6 +119,9 @@ if (empty($_SESSION['user_id']) || $_SESSION['user_role'] !== 'admin') {
             <div class="form-field full-width">
               <label>पूर्ण लेख (नेपाली)</label>
               <textarea id="formContent" placeholder="नेपालीमा पूर्ण लेख यहाँ लेख्नुहोस्।"></textarea>
+            </div>
+            <div class="form-field full-width" style="margin-top:-8px;">
+              <small style="color:#667eea;font-family:var(--font-ui);font-size:0.78rem;">🌐 Auto-translate: Type in any field and click outside — it will auto-translate to the other language. Original text is replaced.</small>
             </div>
             <div class="form-field full-width">
               <label>Article Image</label>
@@ -223,6 +226,8 @@ if (empty($_SESSION['user_id']) || $_SESSION['user_role'] !== 'admin') {
 
   <script src="js/data.js"></script>
   <script src="js/admin.js"></script>
+  <script src="js/translate.js"></script>
+  <script src="js/admin-lang-toggle.js"></script>
 
 </body>
 
