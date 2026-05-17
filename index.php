@@ -155,7 +155,7 @@ session_start(); ?>
       <a href="php/register.php">Register</a>
     </p>
   </footer>
-
+  
   <script src="js/data.js"></script>
   <script src="js/auth.js"></script>
   <script src="js/main.js"></script>
