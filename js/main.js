@@ -301,11 +301,11 @@ function renderArticles(cat) {
     var searchWord = searchInput.value.trim().toLowerCase();
     var searchedNews = [];
 
-    // Loop through filtered news and check if title starts with search word
+    // Loop through filtered news and check if title contains search word (both languages)
     for (var s = 0; s < filtered.length; s++) {
-      var title = filtered[s].titleEn.toLowerCase();
-      // If news title contains the search word, keep it
-      if (title.includes(searchWord)) {
+      var titleEn = (filtered[s].titleEn || "").toLowerCase();
+      var titleNp = (filtered[s].title || "").toLowerCase();
+      if (titleEn.includes(searchWord) || titleNp.includes(searchWord)) {
         searchedNews.push(filtered[s]);
       }
     }
@@ -330,8 +330,8 @@ function renderArticles(cat) {
   // Nothing to show
   if (visible.length === 0) {
     if (heroContainer) heroContainer.innerHTML = "";
-    grid.innerHTML =
-      '<p class="empty-msg">No articles in this category yet.</p>';
+    var emptyText = typeof t === "function" ? t("noArticles") : "No articles in this category yet.";
+    grid.innerHTML = '<p class="empty-msg">' + emptyText + '</p>';
     return;
   }
 
@@ -339,24 +339,28 @@ function renderArticles(cat) {
   var featured = visible[0];
 
   // Build hero card HTML
+  // Use language-aware helpers (from lang-toggle.js)
+  var heroTitle = typeof getLangTitle === "function" ? getLangTitle(featured) : (featured.titleEn || featured.title);
+  var heroSummary = typeof getLangSummary === "function" ? getLangSummary(featured) : (featured.summaryEn || featured.summary);
+
   var heroHtml =
     '<div class="hero-card" onclick="openArticle(\'' +
     featured.id +
-    "')\">" +
+    '\')">' +
     '<div class="hero-img-wrap"><img src="' +
     featured.image +
     '" alt=""' +
     " onerror=\"this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800&q=80'\" /></div>" +
     '<div class="hero-body">' +
     '<h2 class="hero-title">' +
-    escHtml(featured.titleEn) +
+    escHtml(heroTitle) +
     "</h2>" +
     '<p class="hero-summary">' +
-    escHtml(featured.summaryEn) +
+    escHtml(heroSummary) +
     "</p>" +
-    '<div class="hero-labels"><span class="hero-badge">TOP STORIES</span>' +
+    '<div class="hero-labels"><span class="hero-badge">' + (typeof t === "function" ? t("heroTopStories") : "TOP STORIES") + '</span>' +
     '<span class="hero-category-pill">' +
-    CAT_LABELS[featured.category] +
+    (typeof getCatLabel === "function" ? getCatLabel(featured.category) : CAT_LABELS[featured.category]) +
     "</span></div>" +
     '<div class="hero-meta"><span>👤 ' +
     escHtml(featured.author) +
@@ -364,7 +368,7 @@ function renderArticles(cat) {
     "<span>🕐 " +
     featured.date +
     "</span></div>" +
-    '<div class="hero-scroll-hint">↓ Scroll for more stories</div>' +
+    '<div class="hero-scroll-hint">' + (typeof t === "function" ? t("scrollHint") : "↓ Scroll for more stories") + '</div>' +
     "</div></div>";
 
   if (heroContainer) heroContainer.innerHTML = heroHtml;
@@ -375,10 +379,12 @@ function renderArticles(cat) {
     gridHtml = '<div class="cards-grid">';
     for (var n = 1; n < visible.length; n++) {
       var a = visible[n];
+      var cardTitle = typeof getLangTitle === "function" ? getLangTitle(a) : (a.titleEn || a.title);
+      var cardSummary = typeof getLangSummary === "function" ? getLangSummary(a) : (a.summaryEn || a.summary);
       gridHtml +=
         '<div class="news-card" onclick="openArticle(\'' +
         a.id +
-        "')\">" +
+        '\')">' +
         '<div class="card-img-wrap"><img src="' +
         a.image +
         '" alt=""' +
@@ -387,13 +393,13 @@ function renderArticles(cat) {
         '<span class="cat-badge cat-' +
         a.category +
         '">' +
-        CAT_LABELS[a.category] +
+        (typeof getCatLabel === "function" ? getCatLabel(a.category) : CAT_LABELS[a.category]) +
         "</span>" +
         '<h3 class="card-title">' +
-        escHtml(a.titleEn) +
+        escHtml(cardTitle) +
         "</h3>" +
         '<p class="card-summary">' +
-        escHtml(a.summaryEn) +
+        escHtml(cardSummary) +
         "</p>" +
         '<div class="meta"><span>✍ ' +
         escHtml(a.author) +
@@ -403,7 +409,7 @@ function renderArticles(cat) {
         "</span></div>" +
         '<button class="read-more-btn" onclick="event.stopPropagation();openArticle(\'' +
         a.id +
-        "')\">Read More →</button>" +
+        "')\">" + (typeof t === "function" ? t("readMore") : "Read More →") + "</button>" +
         "</div></div>";
     }
     gridHtml += "</div>";
@@ -481,10 +487,11 @@ function buildSidebarList(elementId, articles, showRank) {
       html += '<div class="sidebar-rank">' + (i + 1) + "</div>";
     }
 
+    var sideTitle = typeof getLangTitle === "function" ? getLangTitle(art) : (art.titleEn || art.title);
     html +=
       '<div class="sidebar-article-item-body">' +
       '<div class="sidebar-article-item-title">' +
-      escHtml(art.titleEn) +
+      escHtml(sideTitle) +
       "</div>" +
       '<div class="sidebar-article-item-meta">📅 ' +
       art.date +
